@@ -52,7 +52,7 @@ def joe():
     #print("actual: " + str(y_train[0]))
 
 
-    for i in range(1000):
+    for i in range(100):
         
         prediction = reconstructed.predict(x_train[i:i+1], verbose = 0)
         if(0):
