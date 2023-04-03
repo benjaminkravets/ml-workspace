@@ -51,7 +51,7 @@ def joe():
     #print(" y vals: " + str(prediction))
     #print("actual: " + str(y_train[0]))
 
-
+    unit = 0
     for i in range(3000):
         
         prediction = reconstructed.predict(x_train[i:i+1], verbose = 0)
@@ -61,12 +61,13 @@ def joe():
             print(" y vals: " + str(prediction))
             print("actual: " + str(y_train[i]))
             time.sleep(1)
-        if(prediction > .005):
-            z = z * (1 + y_train[i] / 100)
-        if(prediction < -.005):
+        #if(prediction > .01):
+        #    z = z * (1 + y_train[i] / 100)
+        if(prediction < .3):
             z = z * (1 - y_train[i] / 100)
         if(i % 20 == 0):
-            print(z)
+            print(str(unit) + " " + str(z))
+            unit = unit + 1
 
 
 
