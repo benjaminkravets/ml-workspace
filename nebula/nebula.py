@@ -141,7 +141,7 @@ model.fit(
     x_train,
     y_train,
     validation_split=0.2,
-    epochs=10,
+    epochs=20,
     batch_size=4,
     callbacks=callbacks,
 )

@@ -35,8 +35,8 @@ z = 1
 def joe():
     global z
     reconstructed = keras.models.load_model("mostrecent")
-
-    print("loaded")
+    unit = 0
+    history = []
 
     
     #score = reconstructed.evaluate(x_train, y_train, verbose = 2) 
@@ -52,7 +52,7 @@ def joe():
     #print("actual: " + str(y_train[0]))
 
 
-    for i in range(3000):
+    for i in range(6100):
         
         prediction = reconstructed.predict(x_train[i:i+1], verbose = 0)
         if(0):
@@ -61,12 +61,18 @@ def joe():
             print(" y vals: " + str(prediction))
             print("actual: " + str(y_train[i]))
             time.sleep(1)
-        if(prediction > .005):
-            z = z * (1 + y_train[i] / 100)
-        if(prediction < -.005):
-            z = z * (1 - y_train[i] / 100)
-        if(i % 20 == 0):
-            print(z)
+        if(prediction > .03):
+            z = z * (1 + y_train[i] / 100 * .99978)
+        if(prediction < -.03):
+            z = z * (1 - y_train[i] / 100 * .99978)
+        if(i % 65 == 0):
+            print(str(unit) + " " + str(z))
+            unit += 1
+        history.append(z)
+
+    plt.plot(history)
+    plt.show()
+            
 
 
 
