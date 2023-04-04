@@ -27,7 +27,7 @@ x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
 
 n_classes = len(np.unique(y_train))
 
-z = 1
+z = 1000
 
 
 
@@ -58,14 +58,15 @@ def joe():
         if(0):
             print(" ")
             print("x vals: " + str(x_train[i:i+1]))
+            print("x vals shape: " + str(x_train[i:i+1].shape))
             print(" y vals: " + str(prediction))
             print("actual: " + str(y_train[i]))
             time.sleep(1)
         if(prediction > .03):
-            z = z * (1 + y_train[i] / 100 * .99978)
+            z = z * (1 + y_train[i] / 10 * .998) - 2
         if(prediction < -.03):
-            z = z * (1 - y_train[i] / 100 * .99978)
-        if(i % 65 == 0):
+            z = z * (1 - y_train[i] / 10 * .998) - 2
+        if(i % 6 == 0 or 0):
             print(str(unit) + " " + str(z))
             unit += 1
         history.append(z)
