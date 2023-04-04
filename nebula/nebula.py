@@ -123,7 +123,7 @@ model = build_model(
     num_heads=4,
     ff_dim=4,
     num_transformer_blocks=4,
-    mlp_units=[128],
+    mlp_units=[64],
     mlp_dropout=0.4,
     dropout=0.25,
 )
@@ -141,7 +141,7 @@ model.fit(
     x_train,
     y_train,
     validation_split=0.2,
-    epochs=20,
+    epochs=5,
     batch_size=4,
     callbacks=callbacks,
 )
