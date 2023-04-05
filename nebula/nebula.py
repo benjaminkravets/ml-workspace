@@ -95,8 +95,8 @@ def build_model(
     ff_dim,
     num_transformer_blocks,
     mlp_units,
-    dropout=.1,
-    mlp_dropout=.1,
+    dropout=0,
+    mlp_dropout=0,
 ):
     inputs = keras.Input(shape=input_shape)
     x = inputs
@@ -122,8 +122,8 @@ model = build_model(
     head_size=256,
     num_heads=4,
     ff_dim=4,
-    num_transformer_blocks=4,
-    mlp_units=[16],
+    num_transformer_blocks=2,
+    mlp_units=[64],
     mlp_dropout=0.4,
     dropout=0.25,
 )
@@ -142,9 +142,9 @@ callbacks = [keras.callbacks.EarlyStopping(patience=2, restore_best_weights=True
 model.fit(
     x_train,
     y_train,
-    validation_split=0.05,
-    epochs=3,
-    batch_size=4,
+    validation_split=0.1,
+    epochs=5,
+    batch_size=2,
     callbacks=callbacks,
 )
 

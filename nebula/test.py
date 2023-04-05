@@ -18,7 +18,7 @@ def readucr(filename):
 #x_train, y_train = readucr("FordA_TRAIN.tsv")
 #x_test, y_test = readucr("FordA_TEST.tsv")
 
-x_train, y_train = readucr("train.txt")
+x_train, y_train = readucr("test.txt")
 x_test, y_test = readucr("test.txt")
 
 x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], 1))
@@ -62,15 +62,15 @@ def joe():
             print(" y vals: " + str(prediction))
             print("actual: " + str(y_train[i]))
             time.sleep(1)
-        if(prediction > .03):
-            z = z * (1 + y_train[i] / 25 * 1) - 0
+        if(prediction > 0):
+            z = z * (1 + y_train[i] / 100 * 1) - 0
             
 
-        if(prediction < -.03):
-            z = z * (1 - y_train[i] / 25 * 1) - 0
+        if(prediction < 0):
+            z = z * (1 - y_train[i] / 100 * 1) - 0
             
 
-        if(i % 6 == 0 and 1):
+        if(i % 20 == 0 and 1):
             print(str(unit) + " " + str(z))
             unit += 1
         history.append(z)
