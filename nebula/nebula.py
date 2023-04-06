@@ -123,7 +123,7 @@ model = build_model(
     num_heads=4,
     ff_dim=4,
     num_transformer_blocks=2,
-    mlp_units=[64],
+    mlp_units=[128],
     mlp_dropout=0.4,
     dropout=0.25,
 )
@@ -142,9 +142,9 @@ callbacks = [keras.callbacks.EarlyStopping(patience=2, restore_best_weights=True
 model.fit(
     x_train,
     y_train,
-    validation_split=0.1,
-    epochs=5,
-    batch_size=2,
+    validation_split=0.2,
+    epochs=10,
+    batch_size=64,
     callbacks=callbacks,
 )
 
