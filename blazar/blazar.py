@@ -21,7 +21,7 @@ def split_sequence(sequence, n_steps):
 	return array(X), array(y)
 
 # define input sequence
-raw_seq = [10, 20, 30, 40, 50, 60, 70, 80, 90]
+raw_seq = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160]
 # choose a number of time steps
 n_steps = 3
 # split into samples
