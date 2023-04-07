@@ -18,7 +18,7 @@ def readucr(filename):
 #x_train, y_train = readucr("FordA_TRAIN.tsv")
 #x_test, y_test = readucr("FordA_TEST.tsv")
 
-x_train, y_train = readucr("train.txt")
+x_train, y_train = readucr("test.txt")
 x_test, y_test = readucr("test.txt")
 
 x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], 1))

@@ -70,8 +70,11 @@ def transformer_encoder(inputs, head_size, num_heads, ff_dim, dropout=0):
     res = x + inputs
 
     # Feed Forward Part
+    x = layers.Dense(64, activation="relu")(res)
+    x = layers.Dense(64, activation="relu")(res)
     x = layers.Conv1D(filters=ff_dim, kernel_size=1, activation="relu")(res)
     x = layers.Dropout(dropout)(x)
+    x = layers.Dense(32, activation="relu")(x)
     x = layers.Conv1D(filters=inputs.shape[-1], kernel_size=1)(x)
     x = layers.LayerNormalization(epsilon=1e-6)(x)
     return x + res
@@ -107,6 +110,8 @@ def build_model(
     for dim in mlp_units:
         x = layers.Dense(dim, activation="relu")(x)
         x = layers.Dropout(mlp_dropout)(x)
+
+    
     outputs = layers.Dense(1, activation="tanh")(x)
     return keras.Model(inputs, outputs)
 
@@ -122,7 +127,7 @@ model = build_model(
     head_size=256,
     num_heads=4,
     ff_dim=4,
-    num_transformer_blocks=4,
+    num_transformer_blocks=2,
     mlp_units=[128],
     mlp_dropout=0.4,
     dropout=0.25,
@@ -143,8 +148,8 @@ model.fit(
     x_train,
     y_train,
     validation_split=0.2,
-    epochs=10,
-    batch_size=64,
+    epochs=5,
+    batch_size=8,
     callbacks=callbacks,
 )
 

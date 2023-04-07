@@ -1,163 +1,43 @@
-import pandas as pd
-from tensorflow import keras
-import numpy as np
-import matplotlib.pyplot as plt
-import sys
-from keras import layers
-from keras.utils.vis_utils import plot_model
+# univariate bidirectional lstm example
+from numpy import array
+from keras.models import Sequential
+from keras.layers import LSTM
+from keras.layers import Dense
+from keras.layers import Bidirectional
 
-from keras import backend as K
-from keras.layers import Activation
+# split a univariate sequence
+def split_sequence(sequence, n_steps):
+	X, y = list(), list()
+	for i in range(len(sequence)):
+		# find the end of this pattern
+		end_ix = i + n_steps
+		# check if we are beyond the sequence
+		if end_ix > len(sequence)-1:
+			break
+		# gather input and output parts of the pattern
+		seq_x, seq_y = sequence[i:end_ix], sequence[end_ix]
+		X.append(seq_x)
+		y.append(seq_y)
+	return array(X), array(y)
 
-
-#https://keras.io/examples/timeseries/timeseries_classification_from_scratch/
-#df = pd.read_csv("https://raw.githubusercontent.com/hfawaz/cd-diagram/master/FordA/FordA_TRAIN.tsv")   
-#df.to_csv('FordA_TRAIN.tsv',sep="\t")
-
-def readucr(filename):
-    data = np.loadtxt(filename, delimiter="\t")
-    y = data[:, 0]
-    x = data[:, 1:]
-    return x, y.astype(float)
-
-
-root_url = "https://raw.githubusercontent.com/hfawaz/cd-diagram/master/FordA/"
-
-#x_train, y_train = readucr("FordA_TRAIN.tsv")
-#x_test, y_test = readucr("FordA_TEST.tsv")
-
-x_train, y_train = readucr("train.txt")
-x_test, y_test = readucr("test.txt")
-
-x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], 1))
-x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
-
-n_classes = len(np.unique(y_train))
-
-idx = np.random.permutation(len(x_train))
-x_train = x_train[idx]
-y_train = y_train[idx]
-
-y_train[y_train == -1] = 0
-y_test[y_test == -1] = 0
-
-"""
-## Build the model
-Our model processes a tensor of shape `(batch size, sequence length, features)`,
-where `sequence length` is the number of time steps and `features` is each input
-timeseries.
-You can replace your classification RNN layers with this one: the
-inputs are fully compatible!
-"""
-
-from tensorflow import keras
-from tensorflow.keras import layers
-
-"""
-We include residual connections, layer normalization, and dropout.
-The resulting layer can be stacked multiple times.
-The projection layers are implemented through `keras.layers.Conv1D`.
-"""
-
-
-def transformer_encoder(inputs, head_size, num_heads, ff_dim, dropout=0):
-    # Attention and Normalization
-    x = layers.MultiHeadAttention(
-        key_dim=head_size, num_heads=num_heads, dropout=dropout
-    )(inputs, inputs)
-    x = layers.Dropout(dropout)(x)
-    x = layers.LayerNormalization(epsilon=1e-6)(x)
-    res = x + inputs
-
-    # Feed Forward Part
-    x = layers.Conv1D(filters=ff_dim, kernel_size=1, activation="relu")(res)
-    x = layers.Dropout(dropout)(x)
-    x = layers.Conv1D(filters=inputs.shape[-1], kernel_size=1)(x)
-    x = layers.LayerNormalization(epsilon=1e-6)(x)
-    return x + res
-
-
-"""
-The main part of our model is now complete. We can stack multiple of those
-`transformer_encoder` blocks and we can also proceed to add the final
-Multi-Layer Perceptron classification head. Apart from a stack of `Dense`
-layers, we need to reduce the output tensor of the `TransformerEncoder` part of
-our model down to a vector of features for each data point in the current
-batch. A common way to achieve this is to use a pooling layer. For
-this example, a `GlobalAveragePooling1D` layer is sufficient.
-"""
-
-
-def build_model(
-    input_shape,
-    head_size,
-    num_heads,
-    ff_dim,
-    num_transformer_blocks,
-    mlp_units,
-    dropout=0,
-    mlp_dropout=0,
-):
-    inputs = keras.Input(shape=input_shape)
-    x = inputs
-    for _ in range(num_transformer_blocks):
-        x = transformer_encoder(x, head_size, num_heads, ff_dim, dropout)
-
-    x = layers.GlobalAveragePooling1D(data_format="channels_first")(x)
-    for dim in mlp_units:
-        x = layers.Dense(dim, activation="relu")(x)
-        x = layers.Dropout(mlp_dropout)(x)
-    outputs = layers.Dense(1, activation="tanh")(x)
-    return keras.Model(inputs, outputs)
-
-
-"""
-## Train and evaluate
-"""
-
-input_shape = x_train.shape[1:]
-
-model = build_model(
-    input_shape,
-    head_size=256,
-    num_heads=4,
-    ff_dim=4,
-    num_transformer_blocks=4,
-    mlp_units=[128],
-    mlp_dropout=0.4,
-    dropout=0.25,
-)
-
-model.compile(
-    loss="mean_squared_error",
-    optimizer=keras.optimizers.Adam(learning_rate=1e-3),
-    metrics=["mean_absolute_error"],
-)
-model.summary()
-
-callbacks = [keras.callbacks.EarlyStopping(patience=10, restore_best_weights=True)]
-
-model.fit(
-    x_train,
-    y_train,
-    validation_split=0.2,
-    epochs=40,
-    batch_size=4,
-    callbacks=callbacks,
-)
-
-#model.evaluate(x_test, y_test, verbose=1)
-
-model.save('mostrecent')
-
-"""
-## Conclusions
-In about 110-120 epochs (25s each on Colab), the model reaches a training
-accuracy of ~0.95, validation accuracy of ~84 and a testing
-accuracy of ~85, without hyperparameter tuning. And that is for a model
-with less than 100k parameters. Of course, parameter count and accuracy could be
-improved by a hyperparameter search and a more sophisticated learning rate
-schedule, or a different optimizer.
-You can use the trained model hosted on [Hugging Face Hub](https://huggingface.co/keras-io/timeseries_transformer_classification)
-and try the demo on [Hugging Face Spaces](https://huggingface.co/spaces/keras-io/timeseries_transformer_classification).
-"""
+# define input sequence
+raw_seq = [10, 20, 30, 40, 50, 60, 70, 80, 90]
+# choose a number of time steps
+n_steps = 3
+# split into samples
+X, y = split_sequence(raw_seq, n_steps)
+# reshape from [samples, timesteps] into [samples, timesteps, features]
+n_features = 1
+X = X.reshape((X.shape[0], X.shape[1], n_features))
+# define model
+model = Sequential()
+model.add(Bidirectional(LSTM(50, activation='relu'), input_shape=(n_steps, n_features)))
+model.add(Dense(1))
+model.compile(optimizer='adam', loss='mse')
+# fit model
+model.fit(X, y, epochs=200, verbose=0)
+# demonstrate prediction
+x_input = array([70, 80, 90])
+x_input = x_input.reshape((1, n_steps, n_features))
+yhat = model.predict(x_input, verbose=0)
+print(yhat)
