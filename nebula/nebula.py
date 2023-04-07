@@ -112,7 +112,7 @@ def build_model(
         x = layers.Dropout(mlp_dropout)(x)
 
     
-    outputs = layers.Dense(1, activation="tanh")(x)
+    outputs = layers.Dense(1)(x)
     return keras.Model(inputs, outputs)
 
 

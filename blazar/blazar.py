@@ -4,6 +4,8 @@ from keras.models import Sequential
 from keras.layers import LSTM
 from keras.layers import Dense
 from keras.layers import Bidirectional
+import csv
+import sys
 
 # split a univariate sequence
 def split_sequence(sequence, n_steps):
@@ -20,10 +22,23 @@ def split_sequence(sequence, n_steps):
 		y.append(seq_y)
 	return array(X), array(y)
 
+file = open("train.txt", "r")
+data = list(csv.reader(file, delimiter=","))
+file.close()
+
+data = [val for sublist in data for val in sublist]
+
+data = [float(i) for i in data]
+
+#print(data)
+
+
+
 # define input sequence
 raw_seq = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160]
+raw_seq = data
 # choose a number of time steps
-n_steps = 3
+n_steps = 100
 # split into samples
 X, y = split_sequence(raw_seq, n_steps)
 # reshape from [samples, timesteps] into [samples, timesteps, features]
@@ -31,13 +46,29 @@ n_features = 1
 X = X.reshape((X.shape[0], X.shape[1], n_features))
 # define model
 model = Sequential()
-model.add(Bidirectional(LSTM(50, activation='relu'), input_shape=(n_steps, n_features)))
+model.add(Bidirectional(LSTM(64, activation='relu'), input_shape=(n_steps, n_features)))
+model.add(Dense(64, activation='relu'))
+model.add(Dense(32, activation='relu'))
+model.add(Dense(4, activation='relu'))
+
 model.add(Dense(1))
 model.compile(optimizer='adam', loss='mse')
 # fit model
-model.fit(X, y, epochs=200, verbose=0)
+model.fit(X, y, epochs=10, verbose=2)
+
+model.save('mostrecent')
+
+sys.exit()
+
 # demonstrate prediction
-x_input = array([70, 80, 90])
+x_input = array([-0.026855325,
+                0.415529906,
+                -0.005015884,
+                -0.295951979,
+                1.19989938])
+
+
+
 x_input = x_input.reshape((1, n_steps, n_features))
 yhat = model.predict(x_input, verbose=0)
 print(yhat)

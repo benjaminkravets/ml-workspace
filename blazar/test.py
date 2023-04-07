@@ -5,69 +5,52 @@ import matplotlib.pyplot as plt
 import sys
 from keras import layers
 import time
-
-def readucr(filename):
-    data = np.loadtxt(filename, delimiter="\t")
-    y = data[:, 0]
-    x = data[:, 1:]
-    return x, y.astype(float)
+import csv
+import numpy
 
 
-#root_url = "https://raw.githubusercontent.com/hfawaz/cd-diagram/master/FordA/"
 
-#x_train, y_train = readucr("FordA_TRAIN.tsv")
-#x_test, y_test = readucr("FordA_TEST.tsv")
-
-x_train, y_train = readucr("test.txt")
-x_test, y_test = readucr("test.txt")
-
-x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], 1))
-x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
-
-
-n_classes = len(np.unique(y_train))
-
-z = 1
 
 
 
 
 def joe():
-    global z
-    reconstructed = keras.models.load_model("mostrecent")
+    z = 100
+    model = keras.models.load_model("mostrecent")
+    # choose a number of time steps
+    n_steps = 100
+    # reshape from [samples, timesteps] into [samples, timesteps, features]
+    n_features = 1
+    #reconstructed = keras.models.load_model("mostrecent")
+    file = open("test.txt", "r")
+    data = list(csv.reader(file, delimiter=","))
+    file.close()
 
-    print("loaded")
+    data = [val for sublist in data for val in sublist]
 
-    
-    #score = reconstructed.evaluate(x_train, y_train, verbose = 2) 
-    #print('Test loss:', score[0]) 
-    #print('Test accuracy:', score[1])
+    data = [float(i) for i in data]
+    index = 0
+    period = n_steps
+    for x in data:
+        twentyday = data[index:index+period]
+        index += 1
+        if len(twentyday) == period:
 
+            #print(twentyday)
 
-    prediction = reconstructed.predict(x_train[0:1], verbose = 0)
+            x_input = numpy.array(twentyday)
+            
+            x_input = x_input.reshape((1, n_steps, n_features))
+            yhat = model.predict(x_input, verbose=0)
+            if(yhat > 0):
+                #print("Predicted: " + str(yhat) + " Actual: " + str(data[index+21]))
+                z = z * (1 + data[index + period + 1] / 100 * 1) - 0
+            if(yhat < 0):
+                #print("Predicted: " + str(yhat) + " Actual: " + str(data[index+21]))
+                z = z * (1 - data[index + period + 1] / 100 * 1) - 0
+            print(z)
+            
 
-    #print(" ")
-    #print("x vals: " + str(x_train[0:1]))
-    #print(" y vals: " + str(prediction))
-    #print("actual: " + str(y_train[0]))
-
-    unit = 0
-    for i in range(3000):
-        
-        prediction = reconstructed.predict(x_train[i:i+1], verbose = 0)
-        if(0):
-            print(" ")
-            print("x vals: " + str(x_train[i:i+1]))
-            print(" y vals: " + str(prediction))
-            print("actual: " + str(y_train[i]))
-            time.sleep(1)
-        #if(prediction > .01):
-        #    z = z * (1 + y_train[i] / 100)
-        if(prediction < .3):
-            z = z * (1 - y_train[i] / 100)
-        if(i % 20 == 0):
-            print(str(unit) + " " + str(z))
-            unit = unit + 1
 
 
 
