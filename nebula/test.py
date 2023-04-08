@@ -62,11 +62,11 @@ def joe():
             print(" y vals: " + str(prediction))
             print("actual: " + str(y_train[i]))
             time.sleep(1)
-        if(prediction > .02):
+        if(prediction > 0):
             z = z * (1 + y_train[i] / 100 * 1) - 0
             
 
-        if(prediction < -.02):
+        if(prediction < 0):
             z = z * (1 - y_train[i] / 100 * 1) - 0
             pass
 

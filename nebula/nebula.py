@@ -70,11 +70,8 @@ def transformer_encoder(inputs, head_size, num_heads, ff_dim, dropout=0):
     res = x + inputs
 
     # Feed Forward Part
-    x = layers.Dense(64, activation="relu")(res)
-    x = layers.Dense(64, activation="relu")(res)
     x = layers.Conv1D(filters=ff_dim, kernel_size=1, activation="relu")(res)
     x = layers.Dropout(dropout)(x)
-    x = layers.Dense(32, activation="relu")(x)
     x = layers.Conv1D(filters=inputs.shape[-1], kernel_size=1)(x)
     x = layers.LayerNormalization(epsilon=1e-6)(x)
     return x + res
@@ -98,8 +95,8 @@ def build_model(
     ff_dim,
     num_transformer_blocks,
     mlp_units,
-    dropout=0,
-    mlp_dropout=0,
+    dropout=.25,
+    mlp_dropout=.4,
 ):
     inputs = keras.Input(shape=input_shape)
     x = inputs
@@ -110,8 +107,6 @@ def build_model(
     for dim in mlp_units:
         x = layers.Dense(dim, activation="relu")(x)
         x = layers.Dropout(mlp_dropout)(x)
-
-    
     outputs = layers.Dense(1)(x)
     return keras.Model(inputs, outputs)
 
@@ -128,7 +123,7 @@ model = build_model(
     num_heads=4,
     ff_dim=4,
     num_transformer_blocks=2,
-    mlp_units=[128],
+    mlp_units=[64],
     mlp_dropout=0.4,
     dropout=0.25,
 )
@@ -137,7 +132,7 @@ plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=T
 
 model.compile(
     loss="mean_squared_error",
-    optimizer=keras.optimizers.Adam(learning_rate=1e-4),
+    optimizer=keras.optimizers.Adam(learning_rate=1e-3),
     metrics=["mean_absolute_error"],
 )
 model.summary()
@@ -148,8 +143,8 @@ model.fit(
     x_train,
     y_train,
     validation_split=0.2,
-    epochs=5,
-    batch_size=8,
+    epochs=20,
+    batch_size=64,
     callbacks=callbacks,
 )
 
