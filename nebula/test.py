@@ -69,7 +69,7 @@ def joe():
 
         if(prediction < 0):
             z = z * (1 - y_test[i] / 100 * 1) - 0
-            pass
+            
 
         if(i % 20 == 0 and 1):
             print(str(unit) + " " + str(z))
