@@ -61,8 +61,8 @@ x_test, y_test = readucr(root_url + "FordA_TEST.tsv")
  """
 
 
-x_train, y_train = readucr("test.txt")
-x_test, y_test = readucr("train.txt")
+x_train, y_train = readucr("train.txt")
+x_test, y_test = readucr("test.txt")
 
 
 
@@ -163,9 +163,11 @@ def make_model(input_shape):
     conv3 = keras.layers.BatchNormalization()(conv3)
     conv3 = keras.layers.ReLU()(conv3)
 
-    gap = keras.layers.GlobalAveragePooling1D()(conv3)
+    gap = keras.layers.GlobalAveragePooling1D()(conv1)
 
     #output_layer = keras.layers.Dense(num_classes, activation="softmax")(gap)
+    #output_layer = keras.layers.Dense(64, activation="relu")(gap)
+    output_layer = keras.layers.Dense(32, activation="relu")(gap)
     output_layer = keras.layers.Dense(1)(gap)
     
 
@@ -180,7 +182,7 @@ keras.utils.plot_model(model, show_shapes=True)
 
 """
 
-epochs = 50
+epochs = 100
 batch_size = 32
 
 callbacks = [

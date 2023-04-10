@@ -18,14 +18,14 @@ def readucr(filename):
 #x_train, y_train = readucr("FordA_TRAIN.tsv")
 #x_test, y_test = readucr("FordA_TEST.tsv")
 
-x_train, y_train = readucr("test.txt")
+
 x_test, y_test = readucr("test.txt")
 
-x_train = x_train.reshape((x_train.shape[0], x_train.shape[1], 1))
+
 x_test = x_test.reshape((x_test.shape[0], x_test.shape[1], 1))
 
 
-n_classes = len(np.unique(y_train))
+n_classes = len(np.unique(y_test))
 
 z = 1000
 
@@ -39,36 +39,36 @@ def joe():
     history = []
 
     
-    #score = reconstructed.evaluate(x_train, y_train, verbose = 2) 
+    #score = reconstructed.evaluate(x_test, y_test, verbose = 2) 
     #print('Test loss:', score[0]) 
     #print('Test accuracy:', score[1])
 
 
-    prediction = reconstructed.predict(x_train[0:1], verbose = 0)
+    prediction = reconstructed.predict(x_test[0:1], verbose = 0)
 
     #print(" ")
-    #print("x vals: " + str(x_train[0:1]))
+    #print("x vals: " + str(x_test[0:1]))
     #print(" y vals: " + str(prediction))
-    #print("actual: " + str(y_train[0]))
+    #print("actual: " + str(y_test[0]))
 
 
     for i in range(6100):
         
-        prediction = reconstructed.predict(x_train[i:i+1], verbose = 0)
+        prediction = reconstructed.predict(x_test[i:i+1], verbose = 0)
         if(0):
             print(" ")
-            print("x vals: " + str(x_train[i:i+1]))
-            print("x vals shape: " + str(x_train[i:i+1].shape))
+            print("x vals: " + str(x_test[i:i+1]))
+            print("x vals shape: " + str(x_test[i:i+1].shape))
             print(" y vals: " + str(prediction))
-            print("actual: " + str(y_train[i]))
+            print("actual: " + str(y_test[i]))
             time.sleep(1)
         #print(str(prediction))
         if(prediction > 0):
-            z = z * (1 + y_train[i] / 100 * 1) - 0
+            z = z * (1 + y_test[i] / 100 * 1) - 0
             
 
         if(prediction < 0):
-            z = z * (1 - y_train[i] / 100 * 1) - 0
+            z = z * (1 - y_test[i] / 100 * 1) - 0
             pass
 
         if(i % 20 == 0 and 1):
