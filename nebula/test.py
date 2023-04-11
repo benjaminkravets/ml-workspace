@@ -37,23 +37,18 @@ def joe():
     reconstructed = keras.models.load_model("mostrecent")
     unit = 0
     history = []
-
+    timer1 = 0
+    timer2 = 0
     
-    #score = reconstructed.evaluate(x_train, y_train, verbose = 2) 
-    #print('Test loss:', score[0]) 
-    #print('Test accuracy:', score[1])
-
-
     
-
-    #print(" ")
-    #print("x vals: " + str(x_train[0:1]))
-    #print(" y vals: " + str(prediction))
-    #print("actual: " + str(y_train[0]))
 
 
     for i in range(6100):
-        
+        if(timer1 > 0):
+            timer1 -= 1
+        if(timer2 > 0):
+            timer2 -= 1
+
         prediction = reconstructed.predict(x_test[i:i+1], verbose = 0)
         if(0):
             print(" ")
@@ -63,12 +58,14 @@ def joe():
             print("actual: " + str(y_test[i]))
             time.sleep(1)
         #print(str(prediction))
-        if(prediction > 0):
+        if(prediction > 0 or timer1 > 0):
             z = z * (1 + y_test[i] / 100 * 1) - 0
+            timer1 = 1
             
 
-        if(prediction < 0):
+        if(prediction < 0 or timer2 > 0):
             z = z * (1 - y_test[i] / 100 * 1) - 0
+            timer2 = 1
             
 
         if(i % 20 == 0 and 1):
