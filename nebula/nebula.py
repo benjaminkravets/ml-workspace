@@ -74,7 +74,7 @@ def transformer_encoder(inputs, head_size, num_heads, ff_dim, dropout=0):
     x = layers.Dropout(dropout)(x)
     x = layers.Conv1D(filters=inputs.shape[-1], kernel_size=1)(x)
     x = layers.LayerNormalization(epsilon=1e-6)(x)
-    #x = layers.Dense(64)(x)
+    x = layers.Dense(64)(x)
     return x + res
 
 
@@ -126,8 +126,8 @@ model = build_model(
     head_size=256,
     num_heads=4,
     ff_dim=4,
-    num_transformer_blocks=4,
-    mlp_units=[128],
+    num_transformer_blocks=1,
+    mlp_units=[0],
     mlp_dropout=0.4,
     dropout=0.25,
 )

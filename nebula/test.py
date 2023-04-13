@@ -68,7 +68,7 @@ def joe():
             timer2 = 1
             
 
-        if(i % 20 == 0 and 1):
+        if(i % 24 == 0 and 1):
             print(str(unit) + " " + str(z))
             unit += 1
         history.append(z)
