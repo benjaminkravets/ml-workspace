@@ -6,7 +6,9 @@ import math
 from keras.models import Sequential
 from keras.layers import Dense
 from sklearn.preprocessing import MinMaxScaler
-
+import sys
+from pickle import dump
+import joblib
 
 # convert an array of values into a dataset matrix
 def create_dataset(dataset, look_back=1):
@@ -25,6 +27,7 @@ dataset = dataset.astype('float32')
 scaler = MinMaxScaler()
 scaler = MinMaxScaler(feature_range=(0, 1))
 dataset = scaler.fit_transform(dataset)
+joblib.dump(scaler, 'scaler.save')
 
 # split into train and test sets
 train_size = int(len(dataset) * 0.67)
@@ -35,6 +38,7 @@ train, test = dataset[0:train_size,:], dataset[train_size:len(dataset),:]
 look_back = 3
 trainX, trainY = create_dataset(train, look_back)
 testX, testY = create_dataset(test, look_back)
+
 
 # create and fit Multilayer Perceptron model
 model = Sequential()

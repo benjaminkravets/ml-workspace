@@ -44,7 +44,8 @@ def glower():
 	#print(testX[1], testY[1])
 	#print(testX.shape)
 	#testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
-	#print(testX.shape)
+	print(testX.shape)
+	sys.exit()
 
 	testPredict = model.predict(testX)
 
