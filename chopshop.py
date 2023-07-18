@@ -26,63 +26,66 @@ def create_dataset(dataset, look_back=1):
 	return np.array(dataX), np.array(dataY)
 
 def glower():
-	targetcsv = "humidityfull.csv"
-	dataframe = read_csv(targetcsv, usecols=[1])
+	# load the dataset
+	dataframe = read_csv('airline-passengers.csv', usecols=[1], engine='python')
 	dataset = dataframe.values
+	dataset = dataset.astype('float32')
 
-	scaler = MinMaxScaler()
-	scaler = MinMaxScaler(feature_range=(0, 1))
-	dataset = scaler.fit_transform(dataset)
+	#test only
+	test = dataset[0:len(dataset),:]
+
+	# reshape dataset
+	look_back = 3
+
+	testX, testY = create_dataset(test, look_back)
+	
 
 	model = keras.models.load_model("models/model.keras")
-	look_back = 3
+
 	mass = 1
 	masshistory = []
-	dataset = scaler.transform(dataset)
-	#print(dataset.shape)
-	testX, testY = create_dataset(dataset, look_back)
-	#print(testX[1], testY[1])
-	#print(testX.shape)
-	#testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
-	print(testX.shape)
-	sys.exit()
+	valhistory = []
 
-	testPredict = model.predict(testX)
+	#print(testX.shape, testY.shape)
 
-	#print(testPredict)
+	testY = model.predict(testX)
 
-	testPredict = scaler.inverse_transform(testPredict)
 
-	testX = np.reshape(testX, (testX.shape[0], look_back))
-	testX = scaler.inverse_transform(testX)
-	dataset = scaler.inverse_transform(dataset)
-	#print(testX[0], testPredict[0], dataset[look_back])
+	#print(testX.shape, testY.shape)
+	#sys.exit()
 
-	#print(testX[0][look_back-1])
-
-	tolerance = .00
+	
 	
 	for i, x in enumerate(testX):
 
-		#print("Current:",testX[i][look_back-1],"Prox:",testX[i], "Prediction:",testPredict[i],"Actual:",dataset[i+look_back])
-		if(1):
-			if testPredict[i] > testX[i][look_back-1] + tolerance:
-				mass *= dataset[i+look_back] / testX[i][look_back-1]
-			elif testPredict[i] < testX[i][look_back-1] - tolerance:
-				mass *= testX[i][look_back-1] / dataset[i+look_back]
-		if(0):
-			if testPredict[i] > 1:
-				mass *= dataset[i+look_back]
-			if testPredict[i] < 1:
-				mass *= 1 / dataset[i+look_back]
+		#print("Current:",testX[i][look_back-1],"Prox:",testX[i], "Prediction:",testY[i],"Actual:",dataset[i+look_back])
+		predicted = testY[i]
+		current = testX[i][look_back-1]
+		actual = dataset[i+look_back]
+		z = 1
+		if(z == 1):
+			if predicted > current:
+				mass *= float(actual / current)
+			elif predicted < current:
+				mass *= float(current / actual)
+			pass
 
-		masshistory.append(mass[0])
+		if(z == 0):
+			if predicted > 0:
+				mass *= float((1 + actual))
+			elif predicted < 0:
+				mass *= float((1 / (1 + actual)))
+     
+		
+		#print(mass)
 
-		if i % 260 == 0:
-			print(i, mass)
-	#print(masshistory)
-	plt.plot(masshistory)
+		masshistory.append(mass)
+		valhistory.append(current)
+	
+	plt.plot(masshistory, color="gold")
+	#plt.plot(valhistory, color="green")
 	plt.show()
+			
 
 
 	sys.exit()
