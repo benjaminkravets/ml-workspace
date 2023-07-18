@@ -15,7 +15,9 @@ import joblib
 import statistics, csv
 from dateutil.parser import parse
 from statistics import mean
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
+scalin = 0
 
 def create_dataset(dataset, look_back=1):
 	dataX, dataY = [], []
@@ -27,9 +29,12 @@ def create_dataset(dataset, look_back=1):
 
 def glower():
 	# load the dataset
-	dataframe = read_csv('airline-passengers.csv', usecols=[1], engine='python')
+	dataframe = read_csv('humidity.csv', usecols=[1], engine='python')
 	dataset = dataframe.values
 	dataset = dataset.astype('float32')
+	if(scalin):
+		scaler = StandardScaler()
+		dataset = scaler.fit_transform(dataset)
 
 	#test only
 	test = dataset[0:len(dataset),:]
@@ -38,7 +43,6 @@ def glower():
 	look_back = 3
 
 	testX, testY = create_dataset(test, look_back)
-	
 
 	model = keras.models.load_model("models/model.keras")
 
@@ -46,29 +50,37 @@ def glower():
 	masshistory = []
 	valhistory = []
 
-	#print(testX.shape, testY.shape)
 
 	testY = model.predict(testX)
 
+	if(scalin):
 
-	#print(testX.shape, testY.shape)
-	#sys.exit()
+		dataset = scaler.inverse_transform(dataset)
+		test = dataset[0:len(dataset),:]
+		# reshape dataset
+		look_back = 3
+
+		testX, testY = create_dataset(test, look_back)
+
 
 	
 	
 	for i, x in enumerate(testX):
 
-		#print("Current:",testX[i][look_back-1],"Prox:",testX[i], "Prediction:",testY[i],"Actual:",dataset[i+look_back])
+		print("Current:",testX[i][look_back-1],"Prox:",testX[i], "Prediction:",testY[i],"Actual:",dataset[i+look_back])
 		predicted = testY[i]
 		current = testX[i][look_back-1]
 		actual = dataset[i+look_back]
+
+
+			
 		z = 1
 		if(z == 1):
 			if predicted > current:
 				mass *= float(actual / current)
 			elif predicted < current:
 				mass *= float(current / actual)
-			pass
+			
 
 		if(z == 0):
 			if predicted > 0:
@@ -88,33 +100,6 @@ def glower():
 			
 
 
-	sys.exit()
-	
-	for i, x in enumerate(dataset):
-		if(i > len(dataset)-5):
-			continue
-		prox = dataset[i:(i+5)]
 
-		proxscaled = scaler.transform(prox)
-
-		proxscaled = np.reshape(proxscaled, (1,1,5))
-		
-		guess = scaler.inverse_transform(model.predict(proxscaled, verbose = 0))
-
-		nextopen = dataset[i+5]
-
-		if(guess > prox[4]):
-			mass *= nextopen / prox[4]
-		elif(guess < prox[4]):
-			mass *= prox[4] / nextopen
-		
-		
-		if i % 260 == 0:
-
-			print( i, mass)
-		#np.append(masshistory, mass, axis=0)
-		
-		
-#rise()
 glower()
 
