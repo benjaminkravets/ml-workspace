@@ -13,7 +13,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from keras.utils.vis_utils import plot_model
 import os
 
-scalin = 1
+scaling = 0
 # convert an array of values into a dataset matrix
 def create_dataset(dataset, look_back=1):
 	dataX, dataY = [], []
@@ -24,15 +24,15 @@ def create_dataset(dataset, look_back=1):
 	return np.array(dataX), np.array(dataY)
 
 # load the dataset
-dataframe = read_csv('humidity.csv', usecols=[1], engine='python')
+dataframe = read_csv('airline-passengers.csv', usecols=[1], engine='python')
 dataset = dataframe.values
 dataset = dataset.astype('float32')
-if (scalin):
+if (scaling):
 	scaler = StandardScaler()
 	dataset = scaler.fit_transform(dataset)
 
 # split into train and test sets
-train_size = int(len(dataset) * 0.9)
+train_size = int(len(dataset) * 0.5)
 test_size = len(dataset) - train_size
 train, test = dataset[0:train_size,:], dataset[train_size:len(dataset),:]
 
@@ -46,7 +46,10 @@ print(trainX.shape,trainY.shape)
 
 
 #myoptimizer = optimizers.Adam(loss='mean_squared_error', lr=.0001)
-os.remove("models/model.keras")
+try:
+	os.remove("models/model.keras")
+except:
+	print()
 # create and fit Multilayer Perceptron model
 es = EarlyStopping(monitor='loss', patience=20, mode="auto", restore_best_weights=True)
 
