@@ -10,8 +10,10 @@ import keras
 from keras import optimizers, initializers
 from keras.callbacks import EarlyStopping
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from keras.utils.vis_utils import plot_model
+import os
 
-scalin = 0
+scalin = 1
 # convert an array of values into a dataset matrix
 def create_dataset(dataset, look_back=1):
 	dataX, dataY = [], []
@@ -30,7 +32,7 @@ if (scalin):
 	dataset = scaler.fit_transform(dataset)
 
 # split into train and test sets
-train_size = int(len(dataset) * 0.1)
+train_size = int(len(dataset) * 0.9)
 test_size = len(dataset) - train_size
 train, test = dataset[0:train_size,:], dataset[train_size:len(dataset),:]
 
@@ -44,20 +46,20 @@ print(trainX.shape,trainY.shape)
 
 
 #myoptimizer = optimizers.Adam(loss='mean_squared_error', lr=.0001)
-
+os.remove("models/model.keras")
 # create and fit Multilayer Perceptron model
-es = EarlyStopping(monitor='loss', patience=40, mode="auto", restore_best_weights=True)
+es = EarlyStopping(monitor='loss', patience=20, mode="auto", restore_best_weights=True)
 
 model = Sequential()
 model.add(Dense(12, input_dim=look_back, activation='relu'))
-model.add(Dense(8, activation='relu'))
-model.add(Dense(4, activation='relu'))
+model.add(Dense(16, activation='relu'))
 model.add(Dense(1))
 model.compile(loss='mean_squared_error', optimizer=optimizers.Adam())
 model.fit(trainX, trainY, epochs=400, batch_size=2, verbose=1, callbacks=es)
 #print(testX.shape, testY.shape)
 #sys.exit()
 model.save("models/model.keras")
+plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
 
 # Estimate model performance
 trainScore = model.evaluate(trainX, trainY, verbose=0)
@@ -80,8 +82,8 @@ testPredictPlot[:, :] = np.nan
 testPredictPlot[len(trainPredict)+(look_back*2)+1:len(dataset)-1, :] = testPredict
 
 # plot baseline and predictions
-#plt.plot(dataset)
-#plt.plot(trainPredictPlot)
-#plt.plot(testPredictPlot)
-#plt.show()
+plt.plot(dataset)
+plt.plot(trainPredictPlot)
+plt.plot(testPredictPlot)
+plt.show()
 
