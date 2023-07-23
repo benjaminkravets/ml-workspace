@@ -4,14 +4,18 @@ import matplotlib.pyplot as plt
 from pandas import read_csv
 import math
 from keras.models import Sequential
-from keras.layers import Dense, Dropout
+from keras.layers import Dense, Dropout, Activation
 import sys
-import keras
+import keras as k
+from keras import backend as K
 from keras import optimizers, initializers
 from keras.callbacks import EarlyStopping
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from keras.utils.vis_utils import plot_model
 import os
+import tensorflow_probability as tfp
+import tensorflow as tf
+tfd = tfp.distributions
 
 scaling = 0
 # convert an array of values into a dataset matrix
@@ -22,6 +26,19 @@ def create_dataset(dataset, look_back=1):
 		dataX.append(a)
 		dataY.append(dataset[i + look_back, 0])
 	return np.array(dataX), np.array(dataY)
+
+def custom_loss(y_true, y_pred):
+	def loss_fn(y_true_t, y_pred_t):
+		if ((y_true_t[0] > 0 and y_pred_t[0] < 0) or (y_true_t[0] < 0 and y_pred_t[0] > 0)):
+			print(y_pred_t, y_true_t)
+			return K.square(y_true_t - y_pred_t)
+		else:
+			return float(0)
+	loss = tf.map_fn(lambda x: loss_fn(x[0], x[1]), (y_true, y_pred), dtype=tf.float32)
+	
+	return K.mean(loss)
+
+	
 
 # load the dataset
 dataframe = read_csv('airline-passengers.csv', usecols=[1], engine='python')
@@ -58,7 +75,8 @@ model.add(Dense(12, input_dim=look_back, activation='relu'))
 model.add(Dense(16, activation='relu'))
 model.add(Dropout(.2))
 model.add(Dense(1))
-model.compile(loss='mean_squared_error', optimizer=optimizers.Adam())
+
+model.compile(loss=custom_loss, optimizer=optimizers.Adam())
 model.fit(trainX, trainY, epochs=400, batch_size=2, verbose=1, callbacks=es)
 #print(testX.shape, testY.shape)
 #sys.exit()
@@ -74,6 +92,8 @@ print('Test Score: %.2f MSE (%.2f RMSE)' % (testScore, math.sqrt(testScore)))
 # generate predictions for training
 trainPredict = model.predict(trainX)
 testPredict = model.predict(testX)
+
+
 
 # shift train predictions for plotting
 trainPredictPlot = np.empty_like(dataset)
