@@ -56,6 +56,7 @@ es = EarlyStopping(monitor='loss', patience=20, mode="auto", restore_best_weight
 model = Sequential()
 model.add(Dense(12, input_dim=look_back, activation='relu'))
 model.add(Dense(16, activation='relu'))
+model.add(Dropout(.2))
 model.add(Dense(1))
 model.compile(loss='mean_squared_error', optimizer=optimizers.Adam())
 model.fit(trainX, trainY, epochs=400, batch_size=2, verbose=1, callbacks=es)
