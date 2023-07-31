@@ -15,7 +15,8 @@ from keras.utils.vis_utils import plot_model
 import os
 import tensorflow_probability as tfp
 import tensorflow as tf
-tfd = tfp.distributions
+sys.path.append('Time-series-prediction')
+import tfts
 
 scaling = 0
 # convert an array of values into a dataset matrix
@@ -76,7 +77,7 @@ model.add(Dense(16, activation='relu'))
 model.add(Dropout(.2))
 model.add(Dense(1))
 
-model.compile(loss=custom_loss, optimizer=optimizers.Adam())
+model.compile(loss='mse', optimizer=optimizers.Adam())
 model.fit(trainX, trainY, epochs=400, batch_size=2, verbose=1, callbacks=es)
 #print(testX.shape, testY.shape)
 #sys.exit()

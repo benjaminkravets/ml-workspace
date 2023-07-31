@@ -1,28 +1,20 @@
-import openai
+import sys
+import sys
+sys.path.insert(0,'duh/tfts')
 
-openai.api_base = "http://localhost:4891/v1"
-#openai.api_base = "https://api.openai.com/v1"
+import matplotlib.pyplot as plt
+import tfts
+from tfts import AutoModel, AutoConfig, KerasTrainer
 
-openai.api_key = "not needed for a local LLM"
 
-# Set up the prompt and other parameters for the API request
-prompt = "Who is Michael Jordan?"
+train_length = 24
+predict_length = 8
+(x_train, y_train), (x_valid, y_valid) = tfts.get_data("sine", train_length, predict_length, test_size=0.2)
 
-# model = "gpt-3.5-turbo"
-#model = "mpt-7b-chat"
-model = "gpt4all-j-v1.3-groovy"
+model = AutoModel("transformer", predict_length=predict_length)
+trainer = KerasTrainer(model)
+trainer.train((x_train, y_train), (x_valid, y_valid), n_epochs=5)
 
-# Make the API request
-response = openai.Completion.create(
-    model=model,
-    prompt=prompt,
-    max_tokens=50,
-    temperature=0.28,
-    top_p=0.95,
-    n=1,
-    echo=True,
-    stream=False
-)
-
-# Print the generated completion
-print(response)
+pred = trainer.predict(x_valid)
+trainer.plot(history=x_valid, true=y_valid, pred=pred)
+plt.show()
