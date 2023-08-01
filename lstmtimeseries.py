@@ -76,25 +76,25 @@ if(0):
 	model.add(Dense(16, activation='relu'))
 	model.add(Dropout(.2))
 	model.add(Dense(1))
+
 if(0):
-	model = Sequential()
-	model.add(ntakouris.Time2Vec())
-	model.add(Dense(1))
+	inputs = keras.Input(shape=(trainX.shape[1],1))
+	x = inputs
+	x = MultiHeadAttention(num_heads=2, key_dim=2, dropout=.2)(inputs, inputs)
+	x = Flatten()(x)
+	x = Dense(1)(x)
+
+	model = keras.Model(inputs, x)
+
+	#sys.exit()
 if(1):
 	inputs = keras.Input(shape=(trainX.shape[1],1))
-	outputs = keras.Input(shape=(trainX.shape[1],1))
-	layer = MultiHeadAttention(num_heads=1, key_dim=2, dropout=.2)
+	x = inputs
+	x = ntakouris.ModelTrunk()(x)
+	#x = Flatten()(x)
+	x = Dense(1)(x)
 
-	output_tensor = layer(inputs, outputs)
-
-
-	model = Sequential()
-	model.add(ntakouris.Time2Vec())
-	model.add(keras.Input(tensor=output_tensor))
-	#model.add(layer(inputs, outputs))
-	#model.add(Flatten())
-	model.add(Dense(1))
-
+	model = keras.Model(inputs, x)
 	#sys.exit()
 
 #for layer in model.layers:
@@ -104,10 +104,10 @@ if(1):
 	
 
 model.compile(loss='mse', optimizer=optimizers.Adam())
-model.fit(trainX, trainY, epochs=400, batch_size=2, verbose=1, callbacks=es)
+model.fit(trainX, trainY, epochs=2000, batch_size=2, verbose=1, callbacks=es)
 #print(testX.shape, testY.shape)
 #sys.exit()
-model.save("models/model.keras")
+#model.save("models/model.keras")
 plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
 
 # Estimate model performance
