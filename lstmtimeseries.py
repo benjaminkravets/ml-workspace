@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from pandas import read_csv
 import math
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation
+from keras.layers import Dense, Dropout, Activation, MultiHeadAttention, Flatten, LayerNormalization
 import sys
 import keras as k
 from keras import backend as K
@@ -15,8 +15,8 @@ from keras.utils.vis_utils import plot_model
 import os
 import tensorflow_probability as tfp
 import tensorflow as tf
-sys.path.append('Time-series-prediction')
-import tfts
+import ntakouris
+import keras
 
 scaling = 0
 # convert an array of values into a dataset matrix
@@ -60,7 +60,7 @@ look_back = 3
 trainX, trainY = create_dataset(train, look_back)
 testX, testY = create_dataset(test, look_back)
 
-print(trainX.shape,trainY.shape)
+#print(trainX.shape,trainY.shape)
 
 
 #myoptimizer = optimizers.Adam(loss='mean_squared_error', lr=.0001)
@@ -70,12 +70,38 @@ except:
 	print()
 # create and fit Multilayer Perceptron model
 es = EarlyStopping(monitor='loss', patience=20, mode="auto", restore_best_weights=True)
+if(0):
+	model = Sequential()
+	model.add(Dense(12, input_dim=look_back, activation='relu'))
+	model.add(Dense(16, activation='relu'))
+	model.add(Dropout(.2))
+	model.add(Dense(1))
+if(0):
+	model = Sequential()
+	model.add(ntakouris.Time2Vec())
+	model.add(Dense(1))
+if(1):
+	inputs = keras.Input(shape=(trainX.shape[1],1))
+	outputs = keras.Input(shape=(trainX.shape[1],1))
+	layer = MultiHeadAttention(num_heads=1, key_dim=2, dropout=.2)
 
-model = Sequential()
-model.add(Dense(12, input_dim=look_back, activation='relu'))
-model.add(Dense(16, activation='relu'))
-model.add(Dropout(.2))
-model.add(Dense(1))
+	output_tensor = layer(inputs, outputs)
+
+
+	model = Sequential()
+	model.add(ntakouris.Time2Vec())
+	model.add(keras.Input(tensor=output_tensor))
+	#model.add(layer(inputs, outputs))
+	#model.add(Flatten())
+	model.add(Dense(1))
+
+	#sys.exit()
+
+#for layer in model.layers:
+#	
+#    print(layer.output_shape)
+#sys.exit()
+	
 
 model.compile(loss='mse', optimizer=optimizers.Adam())
 model.fit(trainX, trainY, epochs=400, batch_size=2, verbose=1, callbacks=es)
