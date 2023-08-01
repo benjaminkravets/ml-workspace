@@ -92,19 +92,19 @@ if(1):
 	x = inputs
 	x = ntakouris.ModelTrunk()(x)
 	#x = Flatten()(x)
+	x = LayerNormalization()(x)
 	x = Dense(1)(x)
 
 	model = keras.Model(inputs, x)
 	#sys.exit()
 
 #for layer in model.layers:
-#	
 #    print(layer.output_shape)
 #sys.exit()
 	
 
 model.compile(loss='mse', optimizer=optimizers.Adam())
-model.fit(trainX, trainY, epochs=2000, batch_size=2, verbose=1, callbacks=es)
+model.fit(trainX, trainY, epochs=1000, batch_size=2, verbose=1, callbacks=es)
 #print(testX.shape, testY.shape)
 #sys.exit()
 #model.save("models/model.keras")
