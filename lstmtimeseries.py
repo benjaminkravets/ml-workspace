@@ -13,7 +13,6 @@ from keras.callbacks import EarlyStopping
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from keras.utils.vis_utils import plot_model
 import os
-import tensorflow_probability as tfp
 import tensorflow as tf
 import ntakouris
 import keras
@@ -104,7 +103,7 @@ if(1):
 	
 
 model.compile(loss='mse', optimizer=optimizers.Adam())
-model.fit(trainX, trainY, epochs=1000, batch_size=2, verbose=1, callbacks=es)
+model.fit(trainX, trainY, epochs=500, batch_size=2, verbose=1, callbacks=es)
 #print(testX.shape, testY.shape)
 #sys.exit()
 #model.save("models/model.keras")
