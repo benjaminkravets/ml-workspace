@@ -1,20 +1,20 @@
-import sys
-import sys
-sys.path.insert(0,'duh/tfts')
-
-import matplotlib.pyplot as plt
-import tfts
-from tfts import AutoModel, AutoConfig, KerasTrainer
+from pandas import read_csv
+from matplotlib import pyplot
+from statsmodels.tsa.seasonal import seasonal_decompose
 
 
-train_length = 24
-predict_length = 8
-(x_train, y_train), (x_valid, y_valid) = tfts.get_data("sine", train_length, predict_length, test_size=0.2)
 
-model = AutoModel("transformer", predict_length=predict_length)
-trainer = KerasTrainer(model)
-trainer.train((x_train, y_train), (x_valid, y_valid), n_epochs=5)
 
-pred = trainer.predict(x_valid)
-trainer.plot(history=x_valid, true=y_valid, pred=pred)
-plt.show()
+dataframe = read_csv('humidity.csv', usecols=[1], engine='python')
+dataset = dataframe.values
+series = dataset.astype('float32')
+
+for i,x in enumerate(series):
+    series[i] = series[i] / series[i-1]
+
+result = seasonal_decompose(series, model='multiplicative', period=1)
+
+result.plot()
+pyplot.show()
+
+print(result.seasonal[0:1000])

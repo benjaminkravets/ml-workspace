@@ -69,7 +69,7 @@ except:
 	print()
 # create and fit Multilayer Perceptron model
 es = EarlyStopping(monitor='loss', patience=20, mode="auto", restore_best_weights=True)
-if(0):
+if(1):
 	model = Sequential()
 	model.add(Dense(12, input_dim=look_back, activation='relu'))
 	model.add(Dense(16, activation='relu'))
@@ -86,7 +86,7 @@ if(0):
 	model = keras.Model(inputs, x)
 
 	#sys.exit()
-if(1):
+if(0):
 	inputs = keras.Input(shape=(trainX.shape[1],1))
 	x = inputs
 	x = ntakouris.ModelTrunk()(x)
@@ -103,7 +103,7 @@ if(1):
 	
 
 model.compile(loss='mse', optimizer=optimizers.Adam())
-model.fit(trainX, trainY, epochs=500, batch_size=2, verbose=1, callbacks=es)
+model.fit(trainX, trainY, epochs=50, batch_size=2, verbose=1, callbacks=es)
 #print(testX.shape, testY.shape)
 #sys.exit()
 #model.save("models/model.keras")
