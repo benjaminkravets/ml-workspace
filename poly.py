@@ -12,21 +12,25 @@ import numpy as np
  
 data = read_csv("humiditydiff.csv")
 data = data['Open'].tolist()
+ccdata = data
 l = 2
-data = seasonal_decompose(data, period=l, two_sided=False).trend[2:len(data)-2]
-
+data = seasonal_decompose(data, period=l, two_sided=False).trend
+data = data[l:len(data)]
+ccdata = ccdata[l:len(ccdata)]
 x = []
 y = []
-look_back = 4
+look_back = 2
 
-for i in range((len(data)-look_back)):
+
+
+for i in range(len(data)-look_back - 3000):
 
     x.append(data[i:i+look_back])
-    y.append(data[i+look_back])
+    y.append(ccdata[i+look_back])
+
 #print(x)
 X = np.array(x)
 y = np.array(y)
-print(X[0], y[0])
 
 # Assume you have independent variables X and a dependent variable y
 #X = np.array([[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6]])
@@ -42,7 +46,7 @@ reg = LinearRegression()
 reg.fit(X, y)
  
 # Print the coefficients of the model
-print(reg.coef_)
+#print(reg.coef_)
 mass = 1
 masshistory = []
 
