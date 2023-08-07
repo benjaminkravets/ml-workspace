@@ -13,9 +13,9 @@ from math import sqrt
 import sys
 
 # load dataset
-series = read_csv('airline-passengers.csv', header=0, index_col=0, parse_dates=True, squeeze=True)
+series = read_csv('gold.csv', header=0, index_col=0, parse_dates=True, squeeze=True)
 
-series = series.values.astype('float64')
+series = series.values.astype('float32')
 
 #sys.exit()
 #pyplot.plot(series)
@@ -23,14 +23,14 @@ l = 2
 ccseries = series
 #for z in seasonal_decompose(series, period=l, two_sided=False).weights:
 #	print(z)
-series = seasonal_decompose(series, period=l, two_sided=False).trend
+#series = seasonal_decompose(series, period=l, two_sided=False).trend
 
 print(series[0:5])
 print(ccseries[0:5])
 
 series = series[l:len(series)-l]
 ccseries = ccseries[l:len(ccseries)-l]
-#print(len(series), len(ccseries))
+print(len(series), len(ccseries))
 
 
 #pyplot.plot(ccseries)
@@ -45,14 +45,14 @@ X = series
 
 train, test = X[1:len(X)-7], X[len(X)-7:]
 
-train, test = X[0:40], X[0:(len(X))]
+train, test = X[0:3000], X[0:(len(X))]
 
 print(train.shape, test.shape)
 #sys.exit()
 # train autoregression
 window = 2
-model = AutoReg(train, lags=window)
-#model = ARIMA(train, order=(window,3,0))
+#model = AutoReg(train, lags=window)
+model = ARIMA(train, order=(window,0,0))
 model_fit = model.fit()
 coef = model_fit.params
 
@@ -85,20 +85,30 @@ for t in range(len(test)):
 			mass *= (obs + 1)
 		elif(yhat < 0):
 			mass *= (1 / (obs + 1))
-	if(0):
+	if(1):
 		if(yhat > 0):
-			mass *= (ccseries + 1)
+			mass *= (ccseries[t] + 1)
 		elif(yhat < 0):
-			mass *= (1 / (ccseries + 1))
+			mass *= (1 / (ccseries[t] + 1))
 	if(0):
-
 		if(yhat > test[t-1]):
 			mass *= (obs / test[t-1])
 			
 		elif(yhat < test[t-1]):
 			mass *= (test[t-1] / obs)
 
-	#masshistory.append(mass[0])
+	if(0):
+		if(yhat > test[t-1]):
+			mass *= (ccseries[t] / ccseries[t-1])
+			
+		elif(yhat < test[t-1]):
+			mass *= (ccseries[t-1] / ccseries[t])
+
+
+	#print("Yhat",yhat,"obs",ccseries[t],"today",ccseries[t-1])
+
+
+	masshistory.append(mass)
 	
 		
 		
@@ -106,12 +116,12 @@ for t in range(len(test)):
 rmse = sqrt(mean_squared_error(test, predictions))
 print('Test RMSE: %.3f' % rmse)
 # plot
-if(1):
+if(0):
 	pyplot.plot(test)
 	pyplot.plot(predictions, color='red')
 	pyplot.show()
 
-if(0):
+if(1):
 	pyplot.plot(masshistory)
 	#print(len(masshistory))
 	pyplot.show()
