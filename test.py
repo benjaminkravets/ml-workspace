@@ -5,15 +5,17 @@ from statsmodels.tsa.ar_model import AutoReg
 
 #from statsmodels.tsa.arima_model import ARIMA
 from statsmodels.tsa.arima.model import ARIMA
+from statsmodels.tsa.statespace.sarimax import SARIMAX
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.tsa.exponential_smoothing import ets
+from statsmodels.tsa.holtwinters import SimpleExpSmoothing
 
 from sklearn.metrics import mean_squared_error
 from math import sqrt
 import sys
 
 # load dataset
-series = read_csv('gold.csv', header=0, index_col=0, parse_dates=True, squeeze=True)
+series = read_csv('humiditydiff.csv', header=0, index_col=0, parse_dates=True, squeeze=True)
 
 series = series.values.astype('float32')
 
@@ -23,7 +25,7 @@ l = 2
 ccseries = series
 #for z in seasonal_decompose(series, period=l, two_sided=False).weights:
 #	print(z)
-#series = seasonal_decompose(series, period=l, two_sided=False).trend
+series = seasonal_decompose(series, period=l, two_sided=False).resid
 
 print(series[0:5])
 print(ccseries[0:5])
@@ -43,16 +45,17 @@ print(len(series), len(ccseries))
 # split dataset
 X = series
 
-train, test = X[1:len(X)-7], X[len(X)-7:]
 
-train, test = X[0:3000], X[0:(len(X))]
+train, test = X[0:int(len(X) * 1)], X[0:(len(X))]
 
 print(train.shape, test.shape)
 #sys.exit()
 # train autoregression
-window = 2
-#model = AutoReg(train, lags=window)
-model = ARIMA(train, order=(window,0,0))
+window = 3
+model = AutoReg(train, lags=window)
+#model = ARIMA(train, order=(window,0,0))
+#model = SARIMAX(train, order=(window,0,0), seasonal_order=(0,0,0,0))
+
 model_fit = model.fit()
 coef = model_fit.params
 

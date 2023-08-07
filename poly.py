@@ -1,12 +1,12 @@
 import numpy
 import matplotlib.pyplot as plt
-
+from statistics import mean
 import sys
 import pprint
-
+import math
 
 from sklearn.linear_model import LinearRegression
-from statsmodels.tsa.seasonal import seasonal_decompose
+from statsmodels.tsa.seasonal import seasonal_decompose, convolution_filter
 from pandas import read_csv
 import numpy as np
  
@@ -14,29 +14,38 @@ data = read_csv("humiditydiff.csv")
 data = data['Open'].tolist()
 ccdata = data
 l = 2
-data = seasonal_decompose(data, period=l, two_sided=False).trend
+
+#data = seasonal_decompose(ccdata, period=l, two_sided=False).trend
+#data2 = seasonal_decompose(ccdata, period=l, two_sided=False).resid
+
+#data = seasonal_decompose(ccdata[0:8], period=l, two_sided=False).trend
+
+
+
+
 data = data[l:len(data)]
+#data2 = data2[l:len(data2)]
 ccdata = ccdata[l:len(ccdata)]
+
+#plt.plot(data, )
+#plt.plot(ccdata)
+#plt.show()
+
 x = []
 y = []
-look_back = 2
+look_back = 3
 
 
-
-for i in range(len(data)-look_back - 3000):
-
-    x.append(data[i:i+look_back])
+for i in range(int((len(data)-look_back) * .3)):
+    #xvals = np.append(data[i:i+look_back], data2[i:i+look_back])
+    xvals = data[i:i+look_back]
+    x.append(xvals)
     y.append(ccdata[i+look_back])
+i = 0
 
-#print(x)
 X = np.array(x)
 y = np.array(y)
 
-# Assume you have independent variables X and a dependent variable y
-#X = np.array([[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6]])
-#X = np.array([[1, 2, 3, 4], [2, 3, 4, 5], [3, 4, 5, 6], [4, 5, 6, 7]])
-
-#y = np.array([1, 2, 3, 4])
 
 
 # Create an instance of the LinearRegression class
@@ -44,20 +53,20 @@ reg = LinearRegression()
  
 # Fit the model to the data
 reg.fit(X, y)
- 
-# Print the coefficients of the model
-#print(reg.coef_)
+
 mass = 1
 masshistory = []
 
 for i in range(len(data)-look_back):
+    #xvals = [np.append(data[i:i+look_back], data2[i:i+look_back])]
     xvals = [data[i:i+look_back]]
-
     if reg.predict(xvals) > 0:
-        mass *= (1 + data[i+look_back])
+        mass *= (1 + ccdata[i+look_back])
     elif reg.predict(xvals) < 0:
-        mass *= 1 / (1 + data[i+look_back])
+        mass *= 1 / (1 + ccdata[i+look_back])
     masshistory.append(mass)
+
+print(mass)
 
 plt.plot(masshistory)
 plt.show()
