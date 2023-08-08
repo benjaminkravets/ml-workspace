@@ -6,11 +6,12 @@ import pprint
 import math
 
 from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
 from statsmodels.tsa.seasonal import seasonal_decompose, convolution_filter
 from pandas import read_csv
 import numpy as np
  
-data = read_csv("humiditydiff.csv")
+data = read_csv("humidityminutediff.csv")
 data = data['Open'].tolist()
 ccdata = data
 l = 2
@@ -33,7 +34,7 @@ ccdata = ccdata[l:len(ccdata)]
 
 x = []
 y = []
-look_back = 3
+look_back = 60
 
 
 for i in range(int((len(data)-look_back) * .3)):
@@ -50,9 +51,15 @@ y = np.array(y)
 
 # Create an instance of the LinearRegression class
 reg = LinearRegression()
+#poly = PolynomialFeatures(degree=2)
+#X_ = poly.fit_transform(X)
+#y_ = poly.fit_transform(y)
+
+#close checkmark
  
 # Fit the model to the data
 reg.fit(X, y)
+#reg.fit(X_, y_)
 
 mass = 1
 masshistory = []
