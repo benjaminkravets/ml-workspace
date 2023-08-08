@@ -25,7 +25,7 @@ l = 2
 ccseries = series
 #for z in seasonal_decompose(series, period=l, two_sided=False).weights:
 #	print(z)
-series = seasonal_decompose(series, period=l, two_sided=False).resid
+#series = seasonal_decompose(series, period=l, two_sided=False).resid
 
 print(series[0:5])
 print(ccseries[0:5])
