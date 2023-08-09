@@ -40,7 +40,7 @@ for t in range(len(test)):
 	#model = ARIMA(history, order=(5,1,0))
 	#model_fit = model.fit()
 	#output = model_fit.forecast()
-	yhat = float(model_fit.predict(start=t+5,end=t+5))
+	yhat = float(model_fit.predict(start=t+4,end=t+4))
 
 	predictions.append(yhat)
 	obs = test[t]
