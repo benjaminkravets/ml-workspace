@@ -11,7 +11,7 @@ from statsmodels.tsa.seasonal import seasonal_decompose, convolution_filter
 from pandas import read_csv
 import numpy as np
  
-data = read_csv("humidityminutediff.csv")
+data = read_csv("humiditydailydiff.csv")
 data = data['Open'].tolist()
 ccdata = data
 l = 2
@@ -34,7 +34,7 @@ ccdata = ccdata[l:len(ccdata)]
 
 x = []
 y = []
-look_back = 60
+look_back = 3
 
 
 for i in range(int((len(data)-look_back) * .3)):
