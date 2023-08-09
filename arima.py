@@ -8,11 +8,11 @@ from math import sqrt
 from pandas import DataFrame
 import sys
 
-series = read_csv('humidityhourdiff.csv', header=0, usecols=[1]).values[0:40000]
+series = read_csv('humidityhourdiff.csv', header=0, usecols=[1]).values
 
-look_back = 2
+look_back = 3
 # fit model
-model = SARIMAX(series[0:int(len(series) * 1)], order=(3,0,0))
+model = SARIMAX(series[0:int(len(series) * 1)], order=(1,0,0), seasonal_order=(0,0,0,0), trend=[0,1,1,1,1,1])
 model_fit = model.fit()
 
 
@@ -35,7 +35,7 @@ for t in range(len(series)-10):
 	#model_fit = model.fit()
 	#output = model_fit.forecast()
 	#print(output)
-	output = model_fit.predict(start=t, end=t+2)
+	output = model_fit.predict(start=t)
 	yhat = output[0]
 	obs = series[t]
 
@@ -55,6 +55,6 @@ for t in range(len(series)-10):
 
 	#print('predicted=%f, expected=%f' % (yhat, obs))
 # evaluate forecasts
-print(mass)
+
 pyplot.plot(masshistory)
 pyplot.show()
