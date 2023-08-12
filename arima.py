@@ -3,16 +3,17 @@ from pandas import read_csv
 from matplotlib import pyplot
 from statsmodels.tsa.arima.model import ARIMA, ARIMAResults
 from statsmodels.tsa.statespace.sarimax import SARIMAX
+from statsmodels.tsa.statespace.varmax import VARMAX
 from sklearn.metrics import mean_squared_error
 from math import sqrt
 from pandas import DataFrame
 import sys
 
-series = read_csv('humidityhourdiff.csv', header=0, usecols=[1]).values
+series = read_csv('humidityhourdiff.csv', header=0, usecols=[1]).values[0:20000]
 
 look_back = 3
 # fit model
-model = SARIMAX(series[0:int(len(series) * 1)], order=(1,0,0), seasonal_order=(0,0,0,0), trend=[0,1,1,1,1,1])
+model = SARIMAX(series[0:int(len(series) * 1)], order=(3,1,1), trend=[0,1])
 model_fit = model.fit()
 
 
