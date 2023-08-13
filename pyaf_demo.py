@@ -2,6 +2,7 @@ import numpy as np, pandas as pd
 import pyaf.ForecastEngine as autof
 from pandas import read_csv
 from pandas import DataFrame as df
+import matplotlib.pyplot as plt
 import logging
 import sys, os
 
@@ -17,7 +18,7 @@ if __name__ == '__main__':
 	#print(df_train)
 	
 	
-	df_train = read_csv('spydailydiff.csv', header=0)
+	df_train = read_csv('spydaily.csv', header=0)
 	df_train['Date'] = pd.to_datetime(df_train['Date'])
 	df_train = df_train.rename(columns={'Open':'Signal'})
 
@@ -30,7 +31,7 @@ if __name__ == '__main__':
 	lEngine = autof.cForecastEngine()
 
 	# get the best time series model for predicting one week
-	lEngine.train(iInputDS=df_train, iTime='Date', iSignal='Signal', iHorizon=1);
+	lEngine.train(iInputDS=df_train[0:3000], iTime='Date', iSignal='Signal', iHorizon=1);
 
 	#lEngine.getModelInfo() # => relative error 7% (MAPE)
 
@@ -51,19 +52,27 @@ if __name__ == '__main__':
 	for i in range(len(df_train)):
 		if i < 200:
 			continue
-		df_forecast = lEngine.forecast(iInputDS=df_train[i-200:i], iHorizon=1)
+		df_forecast = lEngine.forecast(iInputDS=df_train[i-100:i], iHorizon=1)
 		yhat = df_forecast['Signal_Forecast'].tail(1).values
 		#if(i < 250):
 		#	print(df_train[0:i])
 		#	print(df_train['Signal'][i])
-		if yhat > 0:
-			mass *= (1 + df_train['Signal'][i])
-		elif yhat < 0:
-			mass *= (1 / (1 + df_train['Signal'][i]))
+
+
+		#if yhat > 0:
+		#	mass *= (1 + df_train['Signal'][i])
+		#elif yhat < 0:
+		#	mass *= (1 / (1 + df_train['Signal'][i]))
+
+		if yhat > (df_train['Signal'][i-1]):
+			mass *= (df_train['Signal'][i] / df_train['Signal'][i - 1])
+		elif yhat < (df_train['Signal'][i-1]):
+			mass *= (df_train['Signal'][i - 1] / df_train['Signal'][i])
+
 		if i % 260 == 0:
 			print(mass)
 		masshistory.append(mass)
 
-import matplotlib.pyplot as plt
-plt.plot(masshistory)
-plt.show()
+	import matplotlib.pyplot as plt
+	plt.plot(masshistory)
+	plt.show()
