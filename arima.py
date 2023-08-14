@@ -9,11 +9,13 @@ from math import sqrt
 from pandas import DataFrame
 import sys
 
-series = read_csv('humidityhourdiff.csv', header=0, usecols=[1]).values[0:20000]
+series = read_csv('datashop/spydailydiff.csv', header=0, usecols=[1]).values
 
 look_back = 3
 # fit model
 model = SARIMAX(series[0:int(len(series) * 1)], order=(3,1,1), trend=[0,1])
+model = SARIMAX(series[0:int(len(series) * 1)], order=(1,1,3))
+
 model_fit = model.fit()
 
 
