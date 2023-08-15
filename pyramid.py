@@ -16,7 +16,7 @@ train_data, test_data = df[:train_len], df[train_len:]
 y_train = train_data['Open'].values
 y_test = test_data['Open'].values
 
-series = read_csv('datashop/humiditydaily.csv', header=0, usecols=[1]).values
+series = read_csv('datashop/SPYdaily.csv', header=0, usecols=[1]).values
 y_train = series[0:3000]
 y_test = series[3000:6000]
 
@@ -26,15 +26,15 @@ print(f"{df.shape[0] - train_len} test samples")
 
 from pmdarima.arima import ndiffs
 
-kpss_diffs = ndiffs(y_train, alpha=0.05, test='kpss', max_d=6)
-adf_diffs = ndiffs(y_train, alpha=0.05, test='adf', max_d=6)
+kpss_diffs = ndiffs(y_train, alpha=0.01, test='kpss', max_d=6)
+adf_diffs = ndiffs(y_train, alpha=0.01, test='adf', max_d=6)
 n_diffs = max(adf_diffs, kpss_diffs)
 
 print(f"Estimated differencing term: {n_diffs}")
 
 auto = pm.auto_arima(y_train, d=n_diffs, seasonal=False, stepwise=True,
-                     suppress_warnings=True, error_action="ignore", max_p=6,
-                     max_order=None, trace=True, start_p=5)
+                     suppress_warnings=True, error_action="ignore", max_p=20, max_d=20, max_q=20,
+                     max_order=None, trace=True, start_p=20)
 
 from sklearn.metrics import mean_squared_error
 from pmdarima.metrics import smape
@@ -59,11 +59,11 @@ for i,new_ob in enumerate(y_test):
     #print(fc, conf)
     z += 1
     tol = .000
-    if(0):
+    if(1):
         if fc > y_test[i] + tol:
-            mass *= ((y_test[i+1] / y_test[i] - 1) * 10 + 1)
+            mass *= ((y_test[i+1] / y_test[i] - 1) * 1 + 1)
         elif fc < y_test[i] - tol:
-            mass *= ((y_test[i] / y_test[i+1] - 1) * 10 + 1)
+            mass *= ((y_test[i] / y_test[i+1] - 1) * 1 + 1)
         print(mass)
 
     if(0):
