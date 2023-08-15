@@ -34,7 +34,7 @@ print(f"Estimated differencing term: {n_diffs}")
 
 auto = pm.auto_arima(y_train, d=n_diffs, seasonal=False, stepwise=True,
                      suppress_warnings=True, error_action="ignore", max_p=6,
-                     max_order=None, trace=True)
+                     max_order=None, trace=True, start_p=5)
 
 from sklearn.metrics import mean_squared_error
 from pmdarima.metrics import smape
@@ -56,13 +56,14 @@ for i,new_ob in enumerate(y_test):
     fc, conf = forecast_one_step()
     forecasts.append(fc)
     confidence_intervals.append(conf)
-    #print(z)
+    #print(fc, conf)
     z += 1
-    if(1):
-        if fc > y_test[i]:
-            mass *= y_test[i+1] / y_test[i]
-        elif fc < y_test[i]:
-            mass *= y_test[i] / y_test[i+1]
+    tol = .000
+    if(0):
+        if fc > y_test[i] + tol:
+            mass *= ((y_test[i+1] / y_test[i] - 1) * 10 + 1)
+        elif fc < y_test[i] - tol:
+            mass *= ((y_test[i] / y_test[i+1] - 1) * 10 + 1)
         print(mass)
 
     if(0):
