@@ -6,14 +6,14 @@ from pandas import read_csv
 import matplotlib.pyplot as plt
 from statsmodels.tsa.stattools import adfuller
 from pandas.plotting import lag_plot
-
+import sys
 auto_correlation = 0
 partial_auto_correlation = 0
-decompose = 0
+decompose = 1
 stationary = 0
-lag_plot
+lag_plot = 0
 
-series = read_csv('datashop/humidityhourdiff.csv', header=0, usecols=[1])
+series = read_csv('datashop/humidityhour.csv', header=0, usecols=[1])
 
 if(auto_correlation):
     plot_acf(series)
@@ -24,8 +24,10 @@ if(partial_auto_correlation):
     plt.show()
 
 if(decompose):
-    decomposed_series = seasonal_decompose(series, period=1)
-    decomposed_series.plot()
+
+    series = series.values
+    decomposed_series = seasonal_decompose(series, period=2, two_sided=False).resid
+    plt.plot(decomposed_series)
     plt.show()
 
 if(stationary):
