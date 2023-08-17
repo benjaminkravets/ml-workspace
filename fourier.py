@@ -85,7 +85,18 @@ plt.show(block=True)
 
 # Apply the FFT on the signal
 fourier = fft(signal)
-
+print(fourier)
 # Plot the result (the spectrum |Xk|)
 plt.plot(np.abs(fourier))
+plt.show()
+
+# Calculate N/2 to normalize the FFT output
+N = len(signal)
+normalize = N/2
+
+# Plot the normalized FFT (|Xk|)/(N/2)
+plt.plot(np.abs(fourier)/normalize)
+plt.ylabel('Amplitude')
+plt.xlabel('Samples')
+plt.title('Normalized FFT Spectrum')
 plt.show()

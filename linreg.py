@@ -10,7 +10,8 @@ from sklearn.preprocessing import PolynomialFeatures
 from statsmodels.tsa.seasonal import seasonal_decompose, convolution_filter
 from pandas import read_csv
 import numpy as np
- 
+import math
+from statistics import mean
 data = read_csv("datashop/humidityhourdiff.csv")
 data = data['Open'].tolist()
 ccdata = data
@@ -34,14 +35,22 @@ ccdata = ccdata[l:len(ccdata)]
 
 x = []
 y = []
-look_back = 24
+look_back = 10
 
 
 for i in range(int((len(data)-look_back) * .4)):
-    #xvals = np.append(data[i:i+look_back], data2[i:i+look_back])
+    #xvals = np.append(data[i:i+look_back], mean(data[i:i+look_back]))
+    #xvals = np.atleast_2d(xvals)
+    #print(xvals)
     xvals = data[i:i+look_back]
+    #print(xvals)
+    xvals.append(np.std(data[i:i+look_back]))
+
+    #print(xvals)
+    #print()
     x.append(xvals)
     y.append(ccdata[i+look_back])
+
 i = 0
 
 X = np.array(x)
@@ -50,7 +59,7 @@ y = np.array(y)
 
 
 # Create an instance of the LinearRegression class
-reg = LinearRegression(n_jobs=10)
+reg = LinearRegression()
 #poly = PolynomialFeatures(degree=2)
 #X_ = poly.fit_transform(X)
 #y_ = poly.fit_transform(y)
@@ -65,8 +74,13 @@ mass = 1
 masshistory = []
 
 for i in range(len(data)-look_back):
-    #xvals = [np.append(data[i:i+look_back], data2[i:i+look_back])]
+    #xvals = np.append(data[i:i+look_back], mean(data[i:i+look_back]))
+
     xvals = [data[i:i+look_back]]
+    #print(xvals, type(xvals))
+    xvals[0].append(np.std(data[i:i+look_back]))
+
+    #print(xvals, type(xvals))
     if reg.predict(xvals) > 0:
         mass *= (1 + ccdata[i+look_back])
     elif reg.predict(xvals) < 0:

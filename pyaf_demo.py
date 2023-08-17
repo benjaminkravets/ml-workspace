@@ -18,7 +18,7 @@ if __name__ == '__main__':
 	#print(df_train)
 	
 	
-	df_train = read_csv('spydaily.csv', header=0)
+	df_train = read_csv('datashop/spydaily.csv', header=0)
 	df_train['Date'] = pd.to_datetime(df_train['Date'])
 	df_train = df_train.rename(columns={'Open':'Signal'})
 
