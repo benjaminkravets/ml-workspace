@@ -11,7 +11,7 @@ from statsmodels.tsa.seasonal import seasonal_decompose, convolution_filter
 from pandas import read_csv
 import numpy as np
  
-data = read_csv("humiditydailydiff.csv")
+data = read_csv("datashop/humidityhourdiff.csv")
 data = data['Open'].tolist()
 ccdata = data
 l = 2
@@ -34,10 +34,10 @@ ccdata = ccdata[l:len(ccdata)]
 
 x = []
 y = []
-look_back = 3
+look_back = 24
 
 
-for i in range(int((len(data)-look_back) * .3)):
+for i in range(int((len(data)-look_back) * .4)):
     #xvals = np.append(data[i:i+look_back], data2[i:i+look_back])
     xvals = data[i:i+look_back]
     x.append(xvals)
@@ -50,7 +50,7 @@ y = np.array(y)
 
 
 # Create an instance of the LinearRegression class
-reg = LinearRegression()
+reg = LinearRegression(n_jobs=10)
 #poly = PolynomialFeatures(degree=2)
 #X_ = poly.fit_transform(X)
 #y_ = poly.fit_transform(y)
