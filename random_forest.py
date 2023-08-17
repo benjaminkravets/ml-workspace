@@ -29,7 +29,7 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
 def train_test_split(data, n_test):
 	return data[:-n_test, :], data[-n_test:, :]
 
-model = RandomForestRegressor(n_estimators=1000)
+model = RandomForestRegressor(n_estimators=100)
 
 # fit an random forest model and make a one step prediction
 def random_forest_forecast(train, testX, trains):
@@ -61,7 +61,7 @@ def walk_forward_validation(data, n_test):
 		if i < 2:
 			yhat = random_forest_forecast(history, testX, 1)
 		else:
-			yhat = random_forest_forecast(history, testX, 0)
+			yhat = random_forest_forecast(history, testX, 1)
 		# store forecast in list of predictions
 		predictions.append(yhat)
 		# add actual observation to history for the next loop
@@ -69,10 +69,18 @@ def walk_forward_validation(data, n_test):
 		# summarize progress
 		#print('>expected=%.5f, predicted=%.5f' % (testy, yhat))
 		#print(test[i], yhat, testy)
-		if yhat > 0:
-			mass *= (1 + testy)
-		elif yhat < 0:
-			mass *= 1 / (1 + testy)
+		if(1):
+			if yhat > 0:
+				mass *= (1 + testy)
+			elif yhat < 0:
+				mass *= 1 / (1 + testy)
+		if(0):
+			#print(yhat, testy, test[i], test[i][-2])
+			if yhat > test[i][-2]:
+				mass *= testy / test[i][-2]
+			if yhat < test[i][-2]:
+				mass *= test[i][-2] / testy
+
 		print(mass)
 
 
