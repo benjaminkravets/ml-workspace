@@ -35,7 +35,7 @@ ccdata = ccdata[l:len(ccdata)]
 
 x = []
 y = []
-look_back = 10
+look_back = 5
 
 
 for i in range(int((len(data)-look_back) * .4)):
