@@ -29,7 +29,7 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
 def train_test_split(data, n_test):
 	return data[:-n_test, :], data[-n_test:, :]
 
-model = RandomForestRegressor(n_estimators=1000)
+model = RandomForestRegressor(n_estimators=100)
 
 # fit an random forest model and make a one step prediction
 def random_forest_forecast(train, testX, trains):
