@@ -91,9 +91,9 @@ def grid_search(data, cfg_list, n_test, parallel=True):
 def exp_smoothing_configs(seasonal=[None]):
 	models = list()
 	# define config lists
-	t_params = ['add', 'mul', None]
+	t_params = ['add', 'mul', 'additive', 'multiplicative', None]
 	d_params = [True, False]
-	s_params = ['add', 'mul', None]
+	s_params = ['add', 'mul', 'additive', 'multiplicative', None]
 	p_params = seasonal
 	b_params = [True, False]
 	r_params = [True, False]
@@ -110,9 +110,8 @@ def exp_smoothing_configs(seasonal=[None]):
 
 if __name__ == '__main__':
 	# load dataset
-	series = read_csv('datashop/births.csv', header=0, index_col=0)
+	series = read_csv('daily-total-female-births.csv', header=0, index_col=0)
 	data = series.values
-	print(data)
 	# data split
 	n_test = 165
 	# model configs
