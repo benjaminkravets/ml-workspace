@@ -1,21 +1,23 @@
-# grid search sarima hyperparameters for daily female dataset
+# grid search ets models for daily female births
 from math import sqrt
 from multiprocessing import cpu_count
 from joblib import Parallel
 from joblib import delayed
 from warnings import catch_warnings
 from warnings import filterwarnings
-from statsmodels.tsa.statespace.sarimax import SARIMAX
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
 from sklearn.metrics import mean_squared_error
 from pandas import read_csv
+from numpy import array
 
-# one-step sarima forecast
-def sarima_forecast(history, config):
-	order, sorder, trend = config
+# one-step Holt Winter’s Exponential Smoothing forecast
+def exp_smoothing_forecast(history, config):
+	t,d,s,p,b,r = config
 	# define model
-	model = SARIMAX(history, order=order, seasonal_order=sorder, trend=trend, enforce_stationarity=False, enforce_invertibility=False)
+	history = array(history)
+	model = ExponentialSmoothing(history, trend=t, damped=d, seasonal=s, seasonal_periods=p)
 	# fit model
-	model_fit = model.fit(disp=False)
+	model_fit = model.fit(optimized=True, use_boxcox=b, remove_bias=r)
 	# make one step forecast
 	yhat = model_fit.predict(len(history), len(history))
 	return yhat[0]
@@ -38,7 +40,7 @@ def walk_forward_validation(data, n_test, cfg):
 	# step over each time-step in the test set
 	for i in range(len(test)):
 		# fit model and make forecast for history
-		yhat = sarima_forecast(history, cfg)
+		yhat = exp_smoothing_forecast(history, cfg)
 		# store forecast in list of predictions
 		predictions.append(yhat)
 		# add actual observation to history for the next loop
@@ -85,44 +87,38 @@ def grid_search(data, cfg_list, n_test, parallel=True):
 	scores.sort(key=lambda tup: tup[1])
 	return scores
 
-# create a set of sarima configs to try
-def sarima_configs(seasonal=[0]):
+# create a set of exponential smoothing configs to try
+def exp_smoothing_configs(seasonal=[None]):
 	models = list()
 	# define config lists
-	p_params = [0, 1, 2]
-	d_params = [0, 1]
-	q_params = [0, 1, 2]
-	t_params = ['n','c','t','ct']
-	P_params = [0, 1, 2]
-	D_params = [0, 1]
-	Q_params = [0, 1, 2]
-	m_params = seasonal
+	t_params = ['add', 'mul', None]
+	d_params = [True, False]
+	s_params = ['add', 'mul', None]
+	p_params = seasonal
+	b_params = [True, False]
+	r_params = [True, False]
 	# create config instances
-	for p in p_params:
+	for t in t_params:
 		for d in d_params:
-			for q in q_params:
-				for t in t_params:
-					for P in P_params:
-						for D in D_params:
-							for Q in Q_params:
-								for m in m_params:
-									cfg = [(p,d,q), (P,D,Q,m), t]
-									models.append(cfg)
+			for s in s_params:
+				for p in p_params:
+					for b in b_params:
+						for r in r_params:
+							cfg = [t,d,s,p,b,r]
+							models.append(cfg)
 	return models
 
 if __name__ == '__main__':
 	# load dataset
 	series = read_csv('datashop/births.csv', header=0, index_col=0)
-	#series = read_csv('humiditydailydiff.csv', header=0, usecols=[1])
-	print(series)
 	data = series.values
-	print(data.shape)
+	print(data)
 	# data split
 	n_test = 165
 	# model configs
-	cfg_list = sarima_configs()
+	cfg_list = exp_smoothing_configs()
 	# grid search
-	scores = grid_search(data, cfg_list, n_test)
+	scores = grid_search(data[:,0], cfg_list, n_test)
 	print('done')
 	# list top 3 configs
 	for cfg, error in scores[:3]:
