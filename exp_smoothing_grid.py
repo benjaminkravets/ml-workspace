@@ -91,9 +91,9 @@ def grid_search(data, cfg_list, n_test, parallel=True):
 def exp_smoothing_configs(seasonal=[None]):
 	models = list()
 	# define config lists
-	t_params = ['add', 'mul', 'additive', 'multiplicative', None]
+	t_params = ['add', 'mul', None]
 	d_params = [True, False]
-	s_params = ['add', 'mul', 'additive', 'multiplicative', None]
+	s_params = ['add', 'mul', None]
 	p_params = seasonal
 	b_params = [True, False]
 	r_params = [True, False]
