@@ -3,7 +3,7 @@ from pandas import read_csv
 import numpy as np
 from statsmodels.tsa.holtwinters import SimpleExpSmoothing, ExponentialSmoothing
 # prepare data
-data = read_csv('datashop/spydaily.csv', header=0, usecols=[1]).values
+data = read_csv('datashop/humidityhour.csv', header=0, usecols=[1]).values
 # create class
 import warnings
 import matplotlib.pyplot as plt
@@ -13,9 +13,9 @@ warnings.filterwarnings('ignore')
 mass = 1
 masshistory = []
 for i in range(len(data)):
-    if i < 1000:
+    if i < 3000:
         continue
-    model = ExponentialSmoothing(data[0:i])
+    model = ExponentialSmoothing(data[i-3000:i])
     # fit model
     model_fit = model.fit()
     
