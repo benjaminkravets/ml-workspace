@@ -112,7 +112,7 @@ def sarima_configs(seasonal=[0]):
 
 if __name__ == '__main__':
 	# load dataset
-	series = read_csv('datashop/births.csv', header=0, index_col=0)
+	series = read_csv('datashop/humiditydaily.csv', header=0, index_col=0)
 	#series = read_csv('humiditydailydiff.csv', header=0, usecols=[1])
 	print(series)
 	data = series.values

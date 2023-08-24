@@ -70,12 +70,12 @@ def walk_forward_validation(data, n_test):
 		# summarize progress
 		#print('>expected=%.5f, predicted=%.5f' % (testy, yhat))
 		#print(test[i], yhat, testy)
-		if(1):
+		if(0):
 			if yhat > 0:
 				mass *= (1 + testy)
 			elif yhat < 0:
 				mass *= 1 / (1 + testy)
-		if(0):
+		if(1):
 			#print(yhat, testy, test[i], test[i][-2])
 			if yhat > test[i][-2]:
 				mass *= testy / test[i][-2]
@@ -91,7 +91,7 @@ def walk_forward_validation(data, n_test):
 
 # load the dataset
 series = read_csv('datashop/births.csv', header=0, index_col=0)
-series = read_csv('datashop/humidityhourdiff.csv', header=0, usecols=[1])[0:10000]
+series = read_csv('datashop/humidityhour.csv', header=0, usecols=[1])[0:10000]
 values = series.values
 # transform the time series data into supervised learning
 data = series_to_supervised(values, n_in=5)
