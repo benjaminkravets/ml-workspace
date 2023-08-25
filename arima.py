@@ -9,12 +9,12 @@ from math import sqrt
 from pandas import DataFrame
 import sys
 
-series = read_csv('datashop/spydailydiff.csv', header=0, usecols=[1]).values
+series = read_csv('datashop/ppmdailydiff.csv', header=0, usecols=[1]).values
 
 look_back = 3
 # fit model
-model = SARIMAX(series[0:int(len(series) * 1)], order=(3,1,1), trend=[0,1])
-model = SARIMAX(series[0:int(len(series) * 1)], order=(1,1,3))
+#model = SARIMAX(series[0:int(len(series) * 1)], order=(3,1,1), trend=[0,1])
+model = SARIMAX(series[0:int(len(series) * 1)], order=(3,0,0))
 
 model_fit = model.fit()
 
@@ -47,11 +47,16 @@ for t in range(len(series)-10):
 	#print()
 
 	tol = .00000
-
-	if yhat > 0 + tol:
-		mass *= (1 + obs) * (1-.000)
-	if yhat < 0 - tol:
-		mass *= (1 / (1 + obs) * (1-.000))
+	if(1):
+		if yhat > 0 + tol:
+			mass *= (1 + obs) * (1-.000)
+		if yhat < 0 - tol:
+			mass *= (1 / (1 + obs) * (1-.000))
+	if(0):
+		if yhat > series[t-1]:
+			mass *= obs / series[t-1]
+		elif yhat < series[t-1]:
+			mass *= (series[t-1] / obs)
 
 	masshistory.append(float(mass))
 

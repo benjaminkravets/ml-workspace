@@ -16,9 +16,9 @@ train_data, test_data = df[:train_len], df[train_len:]
 y_train = train_data['Open'].values
 y_test = test_data['Open'].values
 
-series = read_csv('datashop/SPYdaily.csv', header=0, usecols=[1]).values
+series = read_csv('datashop/ppmdailydiff.csv', header=0, usecols=[1]).values
 y_train = series[0:3000]
-y_test = series[3000:6000]
+y_test = series[3000:len(series)]
 
 
 print(f"{train_len} train samples")
@@ -33,8 +33,8 @@ n_diffs = max(adf_diffs, kpss_diffs)
 print(f"Estimated differencing term: {n_diffs}")
 
 auto = pm.auto_arima(y_train, d=n_diffs, seasonal=False, stepwise=True,
-                     suppress_warnings=True, error_action="ignore", max_p=20, max_d=20, max_q=20,
-                     max_order=None, trace=True, start_p=20)
+                     suppress_warnings=True, error_action="ignore",
+                     max_order=None, trace=True)
 
 from sklearn.metrics import mean_squared_error
 from pmdarima.metrics import smape
@@ -59,14 +59,14 @@ for i,new_ob in enumerate(y_test):
     #print(fc, conf)
     z += 1
     tol = .000
-    if(1):
+    if(0):
         if fc > y_test[i] + tol:
             mass *= ((y_test[i+1] / y_test[i] - 1) * 1 + 1)
         elif fc < y_test[i] - tol:
             mass *= ((y_test[i] / y_test[i+1] - 1) * 1 + 1)
         print(mass)
 
-    if(0):
+    if(1):
         if fc > 0:
             mass *= (1 + y_test[i+1])
         elif fc < 0:
