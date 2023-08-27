@@ -13,9 +13,9 @@ warnings.filterwarnings('ignore')
 mass = 1
 masshistory = []
 for i in range(len(data)):
-    if i < 500:
+    if i < 1000:
         continue
-    model = ExponentialSmoothing(data[0:i])
+    model = ExponentialSmoothing(data[i-1000:i])
     # fit model
     model_fit = model.fit()
     
