@@ -15,9 +15,9 @@ masshistory = []
 for i in range(len(data)):
     if i < 1000:
         continue
-    model = ExponentialSmoothing(data[i-1000:i])
+    model = ExponentialSmoothing(data[0:i])
     # fit model
-    model_fit = model.fit()
+    model_fit = model.fit(damping_trend=.2)
     
     # make prediction
     yhat = model_fit.predict()
