@@ -1,12 +1,15 @@
-# bagging ensemble for making predictions for regression
+# evaluate adaboost ensemble for regression
+from numpy import mean
+from numpy import std
 from sklearn.datasets import make_regression
-from sklearn.ensemble import BaggingRegressor
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import RepeatedKFold
+from sklearn.ensemble import AdaBoostRegressor
 from pandas import read_csv
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn import preprocessing
 # define dataset
-#X, y = make_regression(n_samples=1000, n_features=20, n_informative=15, noise=0.1, random_state=5)
+X, y = make_regression(n_samples=1000, n_features=20, n_informative=15, noise=0.1, random_state=6)
 if(1):
     data = read_csv("datashop/spydailydiff.csv")
     data = data['Open'].tolist()
@@ -20,9 +23,9 @@ if(1):
 
     x = []
     y = []
-    look_back = 5
+    look_back = 20
 
-    for i in range(int((len(data)-look_back) * .3)):
+    for i in range(int((len(data)-look_back) * 1)):
         #xvals = np.append(data[i:i+look_back], mean(data[i:i+look_back]))
         #xvals = np.atleast_2d(xvals)
         #print(xvals)
@@ -39,16 +42,14 @@ if(1):
 
     X = np.array(x)
     y = np.array(y)
-#print(type(data))
 # define the model
-j = 10
-model = BaggingRegressor()
-# fit the model on the whole dataset
+model = AdaBoostRegressor(n_estimators= 100, learning_rate=.1)
 model.fit(X, y)
-# make a single prediction
-#row = [[0.88950817,-0.93540416,0.08392824,0.26438806,-0.52828711,-1.21102238,-0.4499934,1.47392391,-0.19737726,-0.22252503,0.02307668,0.26953276,0.03572757,-0.51606983,-0.39937452,1.8121736,-0.00775917,-0.02514283,-0.76089365,1.58692212]]
-#yhat = model.predict(row)
-#print('Prediction: %d' % yhat[0])
+# evaluate the model
+#cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=1)
+#n_scores = cross_val_score(model, X, y, scoring='neg_mean_absolute_error', cv=cv, n_jobs=-1, error_score='raise')
+# report performance
+#print('MAE: %.3f (%.3f)' % (mean(n_scores), std(n_scores)))
 
 mass = 1
 masshistory = []
