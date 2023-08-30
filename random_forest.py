@@ -90,13 +90,13 @@ def walk_forward_validation(data, n_test):
 	return error, test[:, -1], predictions
 
 # load the dataset
-series = read_csv('datashop/births.csv', header=0, index_col=0)
-series = read_csv('datashop/humidityhour.csv', header=0, usecols=[1])[0:10000]
+#series = read_csv('datashop/births.csv', header=0, index_col=0)
+series = read_csv('datashop/humidityhour.csv', header=0, usecols=[1])[0:20000]
 values = series.values
 # transform the time series data into supervised learning
 data = series_to_supervised(values, n_in=5)
 # evaluate
-mae, y, yhat = walk_forward_validation(data, 6000)
+mae, y, yhat = walk_forward_validation(data, 10000)
 print('MAE: %.3f' % mae)
 # plot expected vs predicted
 pyplot.plot(masshistory)

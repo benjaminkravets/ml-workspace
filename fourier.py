@@ -9,8 +9,8 @@ sin2 = np.sin(x2)
 x2 /= 2
 sin3 = sin1 + sin2
 plt.figure(1)
-plt.plot(x, sin1, color="blue")
-plt.plot(x, sin2, color="red")
+#plt.plot(x, sin1, color="blue")
+#plt.plot(x, sin2, color="red")
 plt.plot(x, sin3, color="purple")
 plt.draw()
 

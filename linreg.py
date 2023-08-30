@@ -12,7 +12,7 @@ from pandas import read_csv
 import numpy as np
 import math
 from statistics import mean
-data = read_csv("datashop/humidityhourdiff.csv")
+data = read_csv("datashop/humiditydailydiff.csv")
 data = data['Open'].tolist()
 ccdata = data
 l = 2
@@ -44,7 +44,7 @@ for i in range(int((len(data)-look_back) * .4)):
     #print(xvals)
     xvals = data[i:i+look_back]
     #print(xvals)
-    xvals.append(np.std(data[i:i+look_back]))
+    #xvals.append(np.std(data[i:i+look_back]))
 
     #print(xvals)
     #print()
@@ -77,14 +77,22 @@ for i in range(len(data)-look_back):
     #xvals = np.append(data[i:i+look_back], mean(data[i:i+look_back]))
 
     xvals = [data[i:i+look_back]]
-    #print(xvals, type(xvals))
-    xvals[0].append(np.std(data[i:i+look_back]))
+    
+    #xvals[0].append(np.std(data[i:i+look_back]))
+    obs = ccdata[i+look_back]
+    yhat = reg.predict(xvals)
+    ycur = ccdata[i+look_back-1]
+    if(1):
+        if yhat > 0:
+            mass *= (1 + obs)
+        elif yhat < 0:
+            mass *= 1 / (1 + obs)
+    if(0):
+        if yhat > ycur:
+            mass *= (obs / ycur)
+        elif yhat < ycur:
+            mass *= (ycur / obs)
 
-    #print(xvals, type(xvals))
-    if reg.predict(xvals) > 0:
-        mass *= (1 + ccdata[i+look_back])
-    elif reg.predict(xvals) < 0:
-        mass *= 1 / (1 + ccdata[i+look_back])
     masshistory.append(mass)
 
 print(mass)
