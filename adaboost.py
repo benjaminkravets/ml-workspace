@@ -25,7 +25,7 @@ if(1):
     y = []
     look_back = 20
 
-    for i in range(int((len(data)-look_back) * 1)):
+    for i in range(int((len(data)-look_back) * .4)):
         #xvals = np.append(data[i:i+look_back], mean(data[i:i+look_back]))
         #xvals = np.atleast_2d(xvals)
         #print(xvals)
@@ -43,7 +43,7 @@ if(1):
     X = np.array(x)
     y = np.array(y)
 # define the model
-model = AdaBoostRegressor(n_estimators= 100, learning_rate=.1)
+model = AdaBoostRegressor(n_estimators= 50, learning_rate=.1)
 model.fit(X, y)
 # evaluate the model
 #cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=1)
