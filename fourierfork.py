@@ -39,27 +39,27 @@ if(0):
             )
             recomb += sinusoid
             plt.plot(x, sinusoid)
+
 if(1):
-    fw = 1
-    freqs = np.fft.fftfreq(len(x) + fw, interval)
+    freqs = np.fft.fftfreq(len(x), interval)
+    print(x)
     threshold = 0.0
-    recomb = np.zeros((len(x) + fw,))
+    recomb = np.zeros((len(x),))
     middle = len(x) // 2 + 1
     for i in range(middle):
-        if abs(fft3[i]) / ((len(x) + 1)) > threshold:
+        if abs(fft3[i]) / (len(x)) > threshold:
             if i == 0:
                 coeff = 2
             else:
                 coeff = 1
             sinusoid = (
                 1
-                / ((len(x)+fw) * coeff / 2)
+                / (len(x) * coeff / 2)
                 * (abs(fft3[i]) * np.cos(freqs[i] * 2 * np.pi * x + cmath.phase(fft3[i])))
             )
             recomb += sinusoid
             plt.plot(x, sinusoid)
-
-#print(recomb)
+#print(recomb[-1])
 plt.draw()
 
 plt.figure(3)
