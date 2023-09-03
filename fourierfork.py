@@ -5,7 +5,7 @@ from pandas import read_csv
 interval = 1
 ranga = 100
 x = np.arange(0, ranga, interval)
-
+x2 = x
 
 if(1):
     data = read_csv("datashop/spydaily.csv", header=0, usecols=[1])
@@ -41,8 +41,10 @@ if(0):
             plt.plot(x, sinusoid)
 
 if(1):
+    fw = 0
+
+    x = np.arange(0, (ranga + fw), interval)
     freqs = np.fft.fftfreq(len(x), interval)
-    print(x)
     threshold = 0.0
     recomb = np.zeros((len(x),))
     middle = len(x) // 2 + 1
@@ -53,15 +55,17 @@ if(1):
             else:
                 coeff = 1
             sinusoid = (
-                1
-                / (len(x) * coeff / 2)
-                * (abs(fft3[i]) * np.cos(freqs[i] * 2 * np.pi * x + cmath.phase(fft3[i])))
+                1 / ((len(x)) * coeff / 2) * (abs(fft3[i]) * np.cos(freqs[i] * 2 * np.pi * x + cmath.phase(fft3[i])))
             )
-            recomb += sinusoid
+            print(recomb.shape, sinusoid.shape)
+            recomb += (sinusoid)
             plt.plot(x, sinusoid)
+    recomb += 2.4
 #print(recomb[-1])
 plt.draw()
 
 plt.figure(3)
-plt.plot(x, recomb, x, sin3)
+plt.plot(x, recomb, color='orange')
+plt.plot(x2, sin3, color='lightblue')
+
 plt.show()
