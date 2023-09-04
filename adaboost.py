@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 # define dataset
 X, y = make_regression(n_samples=1000, n_features=20, n_informative=15, noise=0.1, random_state=6)
 if(1):
-    data = read_csv("datashop/spydailydiff.csv")
+    data = read_csv("datashop/humiditydailydiff.csv")
     data = data['Open'].tolist()
     #print(len(data))
     #data = preprocessing.StandardScaler().fit_transform(data)

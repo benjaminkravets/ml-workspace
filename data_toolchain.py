@@ -7,13 +7,14 @@ import matplotlib.pyplot as plt
 from statsmodels.tsa.stattools import adfuller
 from pandas.plotting import lag_plot
 import sys
-auto_correlation = 0
-partial_auto_correlation = 0
-decompose = 1
-stationary = 0
-lag_plot = 0
+each = 1
+auto_correlation = 0 or each
+partial_auto_correlation = 0 or each
+decompose = 1 or each
+stationary = 0 or each
+lag_plot = 0 or each
 
-series = read_csv('datashop/humidityhour.csv', header=0, usecols=[1])
+series = read_csv('datashop/humiditydailydiff.csv', header=0, usecols=[1])
 
 if(auto_correlation):
     plot_acf(series)
