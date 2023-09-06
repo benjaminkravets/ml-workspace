@@ -7,12 +7,13 @@ import matplotlib.pyplot as plt
 from statsmodels.tsa.stattools import adfuller
 from pandas.plotting import lag_plot
 import sys
+from pandas import DataFrame
 each = 1
 auto_correlation = 0 or each
 partial_auto_correlation = 0 or each
 decompose = 1 or each
 stationary = 0 or each
-lag_plot = 0 or each
+lag_plot_l = 0 or each
 
 series = read_csv('datashop/humiditydailydiff.csv', header=0, usecols=[1])
 
@@ -41,7 +42,7 @@ if(stationary):
     print('ADF critical values:', crit_vals)
     print('ADF best information criterion:', icbest)
 
-if(lag_plot):
+if(lag_plot_l):
     fig, axes = plt.subplots(3, 2, figsize=(8, 12))
     plt.title('MSFT Autocorrelation plot')
 
@@ -58,7 +59,7 @@ if(lag_plot):
     for lag, ax_coords in enumerate(ax_idcs, 1):
         ax_row, ax_col = ax_coords
         axis = axes[ax_row][ax_col]
-        lag_plot(series, lag=lag, ax=axis)
+        lag_plot(DataFrame(series), lag=lag, ax=axis)
         axis.set_title(f"Lag={lag}")
 
     plt.show()
