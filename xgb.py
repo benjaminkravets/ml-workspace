@@ -45,6 +45,7 @@ def xgboost_forecast(train, testX, trains):
 	return yhat[0]
 
 # walk-forward validation for univariate data
+masshistory = []
 def walk_forward_validation(data, n_test):
 	mass = 1
 	predictions = list()
@@ -67,6 +68,10 @@ def walk_forward_validation(data, n_test):
 			elif yhat < 0:
 				mass *= 1 / (1 + testy)
 			print(mass)
+		#if(1):
+
+
+		masshistory.append(mass)
 		# store forecast in list of predictions
 		predictions.append(yhat)
 		# add actual observation to history for the next loop
@@ -79,7 +84,7 @@ def walk_forward_validation(data, n_test):
 
 # load the dataset
 series = read_csv('datashop/births.csv', header=0, index_col=0)
-series = read_csv('datashop/spydailydiff.csv', header=0, usecols=[1])
+series = read_csv('datashop/humiditydailydiff.csv', header=0, usecols=[1])
 values = series.values
 # transform the time series data into supervised learning
 data = series_to_supervised(values, n_in=5)
@@ -87,7 +92,5 @@ data = series_to_supervised(values, n_in=5)
 mae, y, yhat = walk_forward_validation(data, 1000)
 print('MAE: %.3f' % mae)
 # plot expected vs preducted
-pyplot.plot(y, label='Expected')
-pyplot.plot(yhat, label='Predicted')
-pyplot.legend()
+pyplot.plot(masshistory)
 pyplot.show()
