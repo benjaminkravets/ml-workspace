@@ -16,7 +16,7 @@ train_data, test_data = df[:train_len], df[train_len:]
 y_train = train_data['Open'].values
 y_test = test_data['Open'].values
 
-series = read_csv('datashop/ppmdailydiff.csv', header=0, usecols=[1]).values
+series = read_csv('datashop/humiditydaily.csv', header=0, usecols=[1]).values
 y_train = series[0:3000]
 y_test = series[3000:len(series)]
 
@@ -59,14 +59,14 @@ for i,new_ob in enumerate(y_test):
     #print(fc, conf)
     z += 1
     tol = .000
-    if(0):
+    if(1):
         if fc > y_test[i] + tol:
             mass *= ((y_test[i+1] / y_test[i] - 1) * 1 + 1)
         elif fc < y_test[i] - tol:
             mass *= ((y_test[i] / y_test[i+1] - 1) * 1 + 1)
         print(mass)
 
-    if(1):
+    if(0):
         if fc > 0:
             mass *= (1 + y_test[i+1])
         elif fc < 0:

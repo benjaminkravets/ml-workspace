@@ -28,7 +28,7 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
 # split a univariate dataset into train/test sets
 def train_test_split(data, n_test):
 	return data[:-n_test, :], data[-n_test:, :]
-model = XGBRegressor(objective='reg:squarederror', max_depth=1, n_estimators=1000)
+model = XGBRegressor(objective='reg:squarederror', n_estimators=100)
 # fit an xgboost model and make a one step prediction
 def xgboost_forecast(train, testX, trains):
 	global model
@@ -62,13 +62,18 @@ def walk_forward_validation(data, n_test):
 
 
 		#print(testX, testy, yhat)
-		if(1):
+		if(0):
 			if yhat > 0:
 				mass *= (1 + testy)
 			elif yhat < 0:
 				mass *= 1 / (1 + testy)
 			print(mass)
-		#if(1):
+		if(1):
+			#print(yhat, testy, test[i], test[i][-2])
+			if yhat > test[i][-2]:
+				mass *= testy / test[i][-2]
+			if yhat < test[i][-2]:
+				mass *= test[i][-2] / testy
 
 
 		masshistory.append(mass)
@@ -84,12 +89,12 @@ def walk_forward_validation(data, n_test):
 
 # load the dataset
 series = read_csv('datashop/births.csv', header=0, index_col=0)
-series = read_csv('datashop/humiditydailydiff.csv', header=0, usecols=[1])
+series = read_csv('datashop/spydaily.csv', header=0, usecols=[1])
 values = series.values
 # transform the time series data into supervised learning
 data = series_to_supervised(values, n_in=5)
 # evaluate
-mae, y, yhat = walk_forward_validation(data, 1000)
+mae, y, yhat = walk_forward_validation(data, len(series)-1000)
 print('MAE: %.3f' % mae)
 # plot expected vs preducted
 pyplot.plot(masshistory)
