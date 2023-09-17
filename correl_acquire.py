@@ -86,14 +86,15 @@ def glower():
         diff = float(nextopen) / prox[0]
         diffhistory.append(diff)
     
-
-        metric0.append(prox[0] / prox[1])
-        metric1.append(prox[1] / prox[2])
-        metric2.append(prox[2] / prox[3])
-        metric3.append(prox[3] / prox[4])
-        metric4.append(prox[4] / prox[5])
-        metric5.append(prox[5] / prox[6])
-
+        """ 
+        metric0.append(math.log(prox[0] / prox[1]))
+        metric1.append(math.log(prox[1] / prox[2]))
+        metric2.append(math.log(prox[2] / prox[3]))
+        metric3.append(math.log(prox[3] / prox[4]))
+        metric4.append(math.log(prox[4] / prox[5]))
+        metric5.append(math.log(prox[5] / prox[6]))
+         """
+        metric0.append(stdev(prox[0:5]))
 
 
     for z, i in enumerate([metric0, metric1, metric2, metric3, metric4, metric5]):
