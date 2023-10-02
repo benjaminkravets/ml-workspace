@@ -15,7 +15,7 @@ masshistory = []
 for i in range(len(data)):
     if i < 100:
         continue
-    model = ExponentialSmoothing(data[i-100:i])
+    model = ExponentialSmoothing(data[0:i])
     # fit model
     model_fit = model.fit()
     

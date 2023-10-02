@@ -7,7 +7,8 @@ from sklearn.metrics import mean_absolute_error
 from matplotlib import pyplot
 # load data
 path = 'https://raw.githubusercontent.com/jbrownlee/Datasets/master/monthly-car-sales.csv'
-df = read_csv('datashop/births.csv', header=0)
+#path = 'datashop/births.csv'
+df = read_csv(path, header=0)
 # prepare expected column names
 df.columns = ['ds', 'y']
 df['ds']= to_datetime(df['ds'])
