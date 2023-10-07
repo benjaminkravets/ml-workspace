@@ -1,45 +1,26 @@
-
 import multiprocessing
 import time
-import itertools
-from pprint import pprint
-import sys
 
+def worker(letter):
+    print(letter)
+    time.sleep(1)
 
+def main():
+    # Create a list of every lowercase letter
+    letters = list(map(chr, range(97, 123)))
 
-def cube(x):
+    # Create a multiprocessing pool
+    pool = multiprocessing.Pool(processes=4)
 
-    averages = [2.6, 2.54, 1.99]
+    # Submit the letters to the pool
+    for letter in letters:
+        pool.apply_async(worker, (letter,))
 
-    print(x)
+    result = [p.get() for p in pool]
 
-    for i, value in enumerate(x):
-        if value:
-            print(averages[i], end=' ')
-        else:
-            print("na", end=' ')
-    print("\n")
+    # Wait for all tasks to complete
+    pool.close()
+    pool.join()
 
-
-if __name__ == "__main__":
-    pool = multiprocessing.Pool(4)
-
-    superset = list(itertools.product([0,1], repeat=9))
-    superset = [list(x) for x in superset]
-
-    print(len(superset))
-    sys.exit()
-
-    start_time = time.perf_counter()
-    processes = [pool.apply_async(cube, args=(x,)) for x in superset]
-    result = [p.get() for p in processes]
-    finish_time = time.perf_counter()
-    print(f"Program finished in {finish_time-start_time} seconds")
-
-
-
-
-
-
-
-#pprint(superset)
+if __name__ == '__main__':
+    main()
